@@ -100,7 +100,7 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
           }}
         >
           <motion.div
-            className="w-3 h-3 bg-emerald-500 rounded-full"
+            className="w-3 h-3 bg-emerald-500 rounded-full absolute -left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
             animate={{
               boxShadow: ["0 0 0 0 rgba(16, 185, 129, 0.7)", "0 0 0 8px rgba(16, 185, 129, 0)"],
             }}
