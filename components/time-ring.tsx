@@ -92,10 +92,15 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
             top: 80 + 70 * Math.sin(2 * Math.PI * progress - Math.PI / 2),
             left: 80 + 70 * Math.cos(2 * Math.PI * progress - Math.PI / 2),
             transform: "translate(-50%, -50%)",
+            width: "12px",
+            height: "12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <motion.div
-            className="w-2 h-2 bg-emerald-500 rounded-full"
+            className="w-3 h-3 bg-emerald-500 rounded-full"
             animate={{
               boxShadow: ["0 0 0 0 rgba(16, 185, 129, 0.7)", "0 0 0 8px rgba(16, 185, 129, 0)"],
             }}

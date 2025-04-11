@@ -63,6 +63,14 @@ export default function Home() {
     setLanguage(language === "en" ? "ar" : "en")
   }
 
+  // Convert 24-hour format to AM/PM
+  const formatToAmPm = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(":").map(Number)
+    const period = hours >= 12 ? "PM" : "AM"
+    const formattedHours = hours % 12 || 12
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`
+  }
+
   // Determine which prayer is next and calculate progress
   const getPrayerInfo = () => {
     if (!prayerTimes) return { nextPrayer: null, progress: 0, timeUntil: "" }
@@ -192,9 +200,9 @@ export default function Home() {
     >
       <BackgroundGradient isDarkMode={isDarkMode} />
 
-      <div className="container max-w-md mx-auto px-4 py-4 flex-1 flex flex-col">
+      <div className="container max-w-md mx-auto px-4 py-2 flex-1 flex flex-col h-screen overflow-hidden">
         {/* Top controls and date */}
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center mb-1">
           <div className="flex gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -239,13 +247,13 @@ export default function Home() {
           {/* Empty div for flex spacing */}
           <div className="w-[72px]"></div>
         </div>
-
-        {/* Time ring */}
+        
+        {/* Time ring - now takes remaining space */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-1 mb-3"
+          className="flex-1 flex items-center justify-center min-h-0 my-2"
         >
           <TimeRing
             progress={progress}
@@ -262,22 +270,24 @@ export default function Home() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="rounded-xl overflow-hidden bg-white/20 backdrop-blur-lg shadow-lg border border-white/20 flex-1"
+          className="mt-1"
         >
           {Object.entries(prayerTimes).map(([prayer, time], index) => (
             <motion.div
               key={prayer}
               variants={item}
               className={cn(
-                "border-b border-white/10",
-                prayer === nextPrayer && "bg-gradient-to-r from-emerald-500/10 to-teal-500/10",
-                index === Object.entries(prayerTimes).length - 1 && "border-b-0",
+                "py-1.5 px-2 my-0.5 transition-all duration-300",
+                prayer === nextPrayer && 
+                  (isDarkMode 
+                    ? "bg-gradient-to-r from-emerald-500/15 to-teal-500/15 rounded-lg backdrop-blur-sm" 
+                    : "bg-gradient-to-r from-emerald-500/15 to-teal-500/15 rounded-lg backdrop-blur-sm")
               )}
             >
-              <div className="flex justify-between items-center px-4 py-2.5">
+              <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className={cn("font-medium text-sm", prayer === nextPrayer ? "text-emerald-500" : "")}>
+                    <span className={cn("font-medium", prayer === nextPrayer ? "text-emerald-500" : "")}>
                       {language === "en" ? PRAYER_NAMES_EN[prayer] : PRAYER_NAMES_AR[prayer]}
                     </span>
                     {prayer === nextPrayer && (
@@ -300,7 +310,7 @@ export default function Home() {
                 <div
                   className={cn("text-base tabular-nums", prayer === nextPrayer ? "text-emerald-500 font-medium" : "")}
                 >
-                  {time.substring(0, 5)}
+                  {formatToAmPm(time)}
                 </div>
               </div>
             </motion.div>
@@ -311,7 +321,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mt-2 text-center text-xs opacity-60 pb-1"
+          className="text-center text-xs opacity-60 pb-1"
         >
           {language === "en" ? "Prayer times for Bahrain" : "أوقات الصلاة في البحرين"}
         </motion.div>
