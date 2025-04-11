@@ -197,10 +197,26 @@ export default function Home() {
           ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white"
           : "bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 text-slate-900",
       )}
+      style={{
+        paddingTop: "env(safe-area-inset-top, 0px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingLeft: "env(safe-area-inset-left, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
+        maxWidth: "100vw",
+        height: "100vh",
+        boxSizing: "border-box",
+        overflow: "hidden",
+      }}
     >
       <BackgroundGradient isDarkMode={isDarkMode} />
 
-      <div className="container max-w-md mx-auto px-4 py-2 flex-1 flex flex-col h-screen overflow-hidden">
+      <div 
+        className="container max-w-md mx-auto px-4 py-2 flex flex-col"
+        style={{
+          height: "calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
+          overflow: "hidden",
+        }}
+      >
         {/* Top controls and date */}
         <div className="flex justify-between items-center mb-1">
           <div className="flex gap-2">
@@ -248,12 +264,13 @@ export default function Home() {
           <div className="w-[72px]"></div>
         </div>
         
-        {/* Time ring - now takes remaining space */}
+        {/* Time ring - with controlled height */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex-1 flex items-center justify-center min-h-0 my-2"
+          className="flex items-center justify-center"
+          style={{ flex: "0 0 auto", height: "35vh" }}
         >
           <TimeRing
             progress={progress}
@@ -270,7 +287,11 @@ export default function Home() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="mt-1"
+          className="mt-1 overflow-y-auto"
+          style={{ 
+            flex: "1 1 auto",
+            overflowY: "auto",
+          }}
         >
           {Object.entries(prayerTimes).map(([prayer, time], index) => (
             <motion.div
@@ -317,11 +338,13 @@ export default function Home() {
           ))}
         </motion.div>
 
+        {/* Footer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="text-center text-xs opacity-60 pb-1"
+          className="text-center text-xs opacity-60 py-2"
+          style={{ flex: "0 0 auto" }}
         >
           {language === "en" ? "Prayer times for Bahrain" : "أوقات الصلاة في البحرين"}
         </motion.div>
