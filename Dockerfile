@@ -37,6 +37,9 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
+# Create a Procfile for Dokku
+RUN echo "web: node server.js" > Procfile
+
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
@@ -47,8 +50,5 @@ EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
-
-# Create a Procfile for Dokku
-RUN echo "web: node server.js" > Procfile
 
 CMD ["node", "server.js"] 
