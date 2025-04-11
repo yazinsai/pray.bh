@@ -1,0 +1,8 @@
+.git
+.github
+node_modules
+.next
+.vscode
+.env*
+README.md
+.DS_Store 
