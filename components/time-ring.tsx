@@ -87,20 +87,15 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
 
         {/* Pulsing dot at the progress point */}
         <motion.div
-          className="absolute"
+          className="absolute w-3 h-3"
           style={{
-            top: 80 + 70 * Math.sin(2 * Math.PI * progress - Math.PI / 2),
-            left: 80 + 70 * Math.cos(2 * Math.PI * progress - Math.PI / 2),
+            top: `${72 + 63 * Math.sin(2 * Math.PI * progress - Math.PI / 2)}px`,
+            left: `${72 + 63 * Math.cos(2 * Math.PI * progress - Math.PI / 2)}px`,
             transform: "translate(-50%, -50%)",
-            width: "12px",
-            height: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
           <motion.div
-            className="w-3 h-3 bg-emerald-500 rounded-full absolute -left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="w-full h-full bg-emerald-500 rounded-full"
             animate={{
               boxShadow: ["0 0 0 0 rgba(16, 185, 129, 0.7)", "0 0 0 8px rgba(16, 185, 129, 0)"],
             }}
