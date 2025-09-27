@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { ar } from "date-fns/locale"
-import { Moon, Sun, Languages } from "lucide-react"
+import { Moon, Sun, Languages, MapPin, Clock } from "lucide-react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { getPrayerTimes, type PrayerTimes, type Location } from "@/lib/get-prayer-times"
 import { BackgroundGradient } from "@/components/ui/background-gradient"
@@ -293,7 +294,7 @@ export default function Home() {
             overflowY: "auto",
           }}
         >
-          {Object.entries(prayerTimes).map(([prayer, time], index) => (
+          {Object.entries(prayerTimes).map(([prayer, time]) => (
             <motion.div
               key={prayer}
               variants={item}
@@ -336,6 +337,52 @@ export default function Home() {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Quick Links */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="flex flex-wrap justify-center gap-2 py-3"
+          style={{ flex: "0 0 auto" }}
+        >
+          <Link 
+            href="/city/manama"
+            className={cn(
+              "px-3 py-1 rounded-full text-xs flex items-center gap-1 transition-all duration-300",
+              isDarkMode 
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
+            )}
+          >
+            <MapPin size={12} />
+            {language === "en" ? "Manama" : "المنامة"}
+          </Link>
+          <Link 
+            href="/city/muharraq"
+            className={cn(
+              "px-3 py-1 rounded-full text-xs flex items-center gap-1 transition-all duration-300",
+              isDarkMode 
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
+            )}
+          >
+            <MapPin size={12} />
+            {language === "en" ? "Muharraq" : "المحرق"}
+          </Link>
+          <Link 
+            href="/prayer/fajr"
+            className={cn(
+              "px-3 py-1 rounded-full text-xs flex items-center gap-1 transition-all duration-300",
+              isDarkMode 
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
+            )}
+          >
+            <Clock size={12} />
+            {language === "en" ? "Fajr Times" : "وقت الفجر"}
+          </Link>
         </motion.div>
 
         {/* Footer */}
