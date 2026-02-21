@@ -1,6 +1,4 @@
-"use client"
-
-import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
 interface TimeRingProps {
   progress: number
@@ -11,38 +9,31 @@ interface TimeRingProps {
   language: "en" | "ar"
 }
 
+const PRAYER_NAMES_EN: Record<string, string> = {
+  fajr: "Fajr",
+  shurooq: "Sunrise",
+  dhuhr: "Dhuhr",
+  asr: "Asr",
+  maghrib: "Maghrib",
+  isha: "Isha",
+}
+
+const PRAYER_NAMES_AR: Record<string, string> = {
+  fajr: "الفجر",
+  shurooq: "الشروق",
+  dhuhr: "الظهر",
+  asr: "العصر",
+  maghrib: "المغرب",
+  isha: "العشاء",
+}
+
 export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDarkMode, language }: TimeRingProps) {
-  // Calculate the stroke-dashoffset based on progress
-  const circumference = 2 * Math.PI * 70 // 2πr where r is 70
+  const circumference = 2 * Math.PI * 70
   const strokeDashoffset = circumference * (1 - progress)
-
-  // Format prayer names for display
-  const formatPrayerName = (name: string) => {
-    return name.charAt(0).toUpperCase() + name.slice(1)
-  }
-
-  // Prayer names mapping
-  const PRAYER_NAMES_EN: Record<string, string> = {
-    fajr: "Fajr",
-    shurooq: "Sunrise",
-    dhuhr: "Dhuhr",
-    asr: "Asr",
-    maghrib: "Maghrib",
-    isha: "Isha",
-  }
-
-  const PRAYER_NAMES_AR: Record<string, string> = {
-    fajr: "الفجر",
-    shurooq: "الشروق",
-    dhuhr: "الظهر",
-    asr: "العصر",
-    maghrib: "المغرب",
-    isha: "العشاء",
-  }
 
   const displayPrayerName =
     language === "en"
-      ? PRAYER_NAMES_EN[nextPrayer] || formatPrayerName(nextPrayer)
+      ? PRAYER_NAMES_EN[nextPrayer] || nextPrayer
       : PRAYER_NAMES_AR[nextPrayer] || nextPrayer
 
   return (
@@ -61,7 +52,7 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
           />
 
           {/* Progress ring */}
-          <motion.circle
+          <circle
             cx="80"
             cy="80"
             r="70"
@@ -70,10 +61,9 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
             strokeWidth="6"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            strokeDashoffset={strokeDashoffset}
             transform="rotate(-90 80 80)"
+            className="transition-[stroke-dashoffset] duration-1000 ease-in-out"
           />
 
           {/* Gradient definition */}
@@ -86,7 +76,7 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
         </svg>
 
         {/* Pulsing dot at the progress point */}
-        <motion.div
+        <div
           className="absolute w-3 h-3"
           style={{
             top: `${72 + 63 * Math.sin(2 * Math.PI * progress - Math.PI / 2)}px`,
@@ -94,47 +84,22 @@ export function TimeRing({ progress, currentPrayer, nextPrayer, timeUntil, isDar
             transform: "translate(-50%, -50%)",
           }}
         >
-          <motion.div
-            className="w-full h-full bg-emerald-500 rounded-full"
-            animate={{
-              boxShadow: ["0 0 0 0 rgba(16, 185, 129, 0.7)", "0 0 0 8px rgba(16, 185, 129, 0)"],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeOut",
-            }}
-          />
-        </motion.div>
+          <div className="w-full h-full bg-emerald-500 rounded-full animate-pulse-ring" />
+        </div>
 
         {/* Center content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-0.5 text-xs opacity-70"
-          >
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-fade-in delay-300">
+          <div className="mb-0.5 text-xs opacity-70">
             {language === "en" ? "Next prayer" : "الصلاة القادمة"}
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className={`text-xl font-bold text-emerald-600 ${language === "ar" ? "font-arabic" : ""}`}
-          >
+          <div className={cn("text-xl font-bold text-emerald-600", language === "ar" && "font-arabic")}>
             {displayPrayerName}
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-0.5 text-base font-bold text-emerald-600"
-          >
+          <div className="mt-0.5 text-base font-bold text-emerald-600">
             {timeUntil}
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
