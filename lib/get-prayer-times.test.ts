@@ -74,6 +74,16 @@ describe('getPrayerTimes', () => {
       expect(getTimeDifference(calculated.dhuhr, canonical.dhuhr)).toBeLessThanOrEqual(1);
       expect(getTimeDifference(calculated.isha, canonical.isha)).toBeLessThanOrEqual(1);
     });
+
+    it('should keep the reported 2026-07-25 Fajr time aligned with official Bahrain timing', () => {
+      const calculated = getPrayerTimes(bahrain, '2026-07-25');
+
+      // Regression for a stale/cached page showing 03:17. The official Bahrain
+      // timing reported for this day was 03:32; the astronomical AWQAF method
+      // should remain within one minute for Fajr.
+      expect(getTimeDifference(calculated.fajr, '03:32')).toBeLessThanOrEqual(1);
+      expect(getTimeDifference(calculated.fajr, '03:17')).toBeGreaterThan(10);
+    });
   });
 
   describe('Seasonal variations', () => {

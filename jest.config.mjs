@@ -2,6 +2,7 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>'],
+  modulePathIgnorePatterns: ['<rootDir>/.next'],
   testMatch: ['**/__tests__/**/*.ts', '**/*.test.ts'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',

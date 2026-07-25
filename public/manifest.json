@@ -1,13 +1,35 @@
 {
-  "name": "pray.bh - Prayer Times in Bahrain",
+  "name": "pray.bh - Bahrain Prayer Times",
   "short_name": "pray.bh",
-  "description": "Elegant prayer times application for Bahrain",
-  "theme_color": "#000000",
-  "background_color": "#000000",
+  "description": "Accurate Bahrain prayer times for Fajr, Sunrise, Dhuhr, Asr, Maghrib, and Isha.",
+  "id": "/",
+  "theme_color": "#047857",
+  "background_color": "#fff7ed",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "lang": "en-BH",
+  "dir": "ltr",
+  "categories": ["lifestyle", "utilities", "productivity"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Fajr time",
+      "short_name": "Fajr",
+      "description": "Open today's Fajr time in Bahrain",
+      "url": "/prayer/fajr?source=pwa-shortcut",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Manama times",
+      "short_name": "Manama",
+      "description": "Open prayer times for Manama",
+      "url": "/city/manama?source=pwa-shortcut",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -34,6 +56,13 @@
       "purpose": "any"
     }
   ],
-  "categories": ["lifestyle", "utilities"],
-  "prefer_related_applications": false
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "pray.bh Bahrain prayer times"
+    }
+  ]
 }

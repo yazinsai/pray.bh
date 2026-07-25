@@ -5,7 +5,6 @@ import { getPrayerTimes, type PrayerTimes, type Location } from "@/lib/get-praye
 import { BackgroundGradient } from "@/components/ui/background-gradient"
 import { TimeRing } from "@/components/time-ring"
 import { LiveTicker } from "@/components/live-ticker"
-import { ServiceWorkerRegistration } from "@/components/service-worker-registration"
 
 // Bahrain's coordinates
 const BAHRAIN_LOCATION: Location = {
@@ -224,7 +223,6 @@ export default function Home() {
 
       {/* Tiny client component for live updates */}
       <LiveTicker prayerTimes={prayerTimes} />
-      <ServiceWorkerRegistration />
     </div>
   )
 }
