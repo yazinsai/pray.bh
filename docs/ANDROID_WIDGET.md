@@ -4,9 +4,9 @@ This adds a minimal native Android companion app for `pray.bh`.
 
 ## What it includes
 
-- Android app shell: opens `https://pray.bh/?source=android-app`
-- Home Screen widget: horizontal single-row prayer times
-- Widget API: `https://pray.bh/api/prayer-times/today`
+- Android app shell: offline native app UI
+- Home Screen widget: offline horizontal single-row prayer times
+- Widget/API dependency: none at runtime; same Bahrain calculation is embedded locally
 - Package/application ID: `bh.pray.app`
 - Version: `0.1.0` / code `1`
 
@@ -51,9 +51,11 @@ Or from Android Studio terminal:
 ## Widget behavior
 
 - Shows: Fajr, Dhuhr, Asr, Maghrib, Isha.
+- Calculates Bahrain prayer times locally on-device.
+- Does not require internet permission.
 - Hides Sunrise to keep the row clean.
 - Highlights the next prayer with a dark rounded chip.
-- Tapping widget opens `https://pray.bh/?source=android-widget`.
+- Tapping widget opens the offline native app.
 - Android refresh interval is set to 30 minutes; Android may throttle based on battery rules.
 
 ## Release path later
@@ -69,5 +71,5 @@ For Google Play:
 ## Notes
 
 - This is intentionally simple Java/native Android, no React Native/Flutter dependency.
-- The website stays the source of truth.
-- The app can be replaced with a fuller native Android UI later; the widget is already native.
+- The Android app and widget work offline for Bahrain prayer times.
+- The web app remains useful for SEO/deep pages; the Android runtime does not depend on it.
