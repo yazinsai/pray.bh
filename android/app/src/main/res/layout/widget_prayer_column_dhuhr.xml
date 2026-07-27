@@ -1,0 +1,12 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:gravity="center"
+    android:orientation="vertical">
+    <TextView android:id="@+id/dhuhr_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dhuhr" android:textColor="#666D69" android:textSize="11sp" android:textStyle="bold" />
+    <FrameLayout android:layout_width="wrap_content" android:layout_height="30dp" android:layout_marginTop="4dp">
+        <TextView android:id="@+id/dhuhr_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="11:44" android:textColor="#202422" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/dhuhr_chip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:background="@drawable/next_time_chip" android:text="11:44" android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

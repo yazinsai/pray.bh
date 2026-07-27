@@ -1,0 +1,11 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_name"
+    android:initialLayout="@layout/prayer_times_widget"
+    android:minWidth="280dp"
+    android:minHeight="72dp"
+    android:previewLayout="@layout/prayer_times_widget"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="5"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen" />
