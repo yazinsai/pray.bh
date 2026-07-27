@@ -8,7 +8,7 @@ settings:
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
-    DEVELOPMENT_TEAM: B6CT95J3J5
+    DEVELOPMENT_TEAM: 88M2R3XJZH
     CODE_SIGN_STYLE: Automatic
 packages: {}
 targets:
@@ -17,12 +17,11 @@ targets:
     platform: iOS
     sources:
       - path: PrayBHApp
-        excludes:
-          - Assets.xcassets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: bh.pray.app
         INFOPLIST_FILE: PrayBHApp/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
       - target: PrayBHWidgetExtension
   PrayBHWidgetExtension:

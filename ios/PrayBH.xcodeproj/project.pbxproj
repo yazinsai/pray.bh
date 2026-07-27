@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A2E9B6719E7EC2B218A8D70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */; };
 		927A379C19A74A6276A0EA53 /* PrayBHWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CD362264BA14E5044536C687 /* PrayBHWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8AD55E5421E313325B9348 /* PrayBHWidget.swift */; };
 		F42C16B37ADEA2EE4F6FF565 /* PrayBHApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669EC81997331EEB946D7F2C /* PrayBHApp.swift */; };
@@ -41,6 +42,7 @@
 		28EE761BE2C67F3A00060CD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4AD7E46FA9CC14848FEC9227 /* PrayBH.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrayBH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		669EC81997331EEB946D7F2C /* PrayBHApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayBHApp.swift; sourceTree = "<group>"; };
+		74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrayBHWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF8AD55E5421E313325B9348 /* PrayBHWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayBHWidget.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -76,6 +78,7 @@
 		D69B78B1DF49117190C327C4 /* PrayBHApp */ = {
 			isa = PBXGroup;
 			children = (
+				74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */,
 				28EE761BE2C67F3A00060CD5 /* Info.plist */,
 				669EC81997331EEB946D7F2C /* PrayBHApp.swift */,
 			);
@@ -107,6 +110,7 @@
 			buildConfigurationList = 8EB867B97914C146A2D6F864 /* Build configuration list for PBXNativeTarget "PrayBH" */;
 			buildPhases = (
 				A6E9CE67710531B778587B2A /* Sources */,
+				DF05E1FA47BD513929BFB998 /* Resources */,
 				AE6410097CEF5DA6E6CA5C26 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -131,11 +135,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					7E716FABC01255C321E7F839 = {
-						DevelopmentTeam = B6CT95J3J5;
+						DevelopmentTeam = 88M2R3XJZH;
 						ProvisioningStyle = Automatic;
 					};
 					AD1B607B4B8D9DE5BFF5AD7E = {
-						DevelopmentTeam = B6CT95J3J5;
+						DevelopmentTeam = 88M2R3XJZH;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -159,6 +163,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DF05E1FA47BD513929BFB998 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A2E9B6719E7EC2B218A8D70 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1AE8726B8B0D9C63972378E6 /* Sources */ = {
@@ -289,7 +304,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = B6CT95J3J5;
+				DEVELOPMENT_TEAM = 88M2R3XJZH;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -349,7 +364,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = B6CT95J3J5;
+				DEVELOPMENT_TEAM = 88M2R3XJZH;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

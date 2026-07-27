@@ -136,40 +136,64 @@ struct SmallPrayerWidget: View {
 struct MediumPrayerWidget: View {
     let entry: PrayerEntry
 
+    private var rowPrayers: [Prayer] {
+        entry.response.prayers.filter { $0.key != "shurooq" }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Next: \(entry.response.nextPrayer.nameEn)")
-                        .font(.headline.weight(.bold))
-                    Text("\(formatDisplayTime(entry.response.nextPrayer.time)) · \(timeUntilText(entry.response.minutesUntilNextPrayer))")
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 7) {
+                Circle()
+                    .fill(Color.primary.opacity(0.55))
+                    .frame(width: 8, height: 8)
+
+                Text(entry.date.formatted(.dateTime.weekday(.abbreviated).month(.wide).day()))
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.primary.opacity(0.78))
+
                 Spacer()
+
                 Text("pray.bh")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.green)
+                    .foregroundStyle(.primary.opacity(0.62))
             }
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 6) {
-                ForEach(entry.response.prayers, id: \.self) { prayer in
-                    HStack {
-                        Text(shortName(prayer))
-                            .font(.caption.weight(prayer.key == entry.response.nextPrayer.key ? .bold : .regular))
-                        Spacer()
-                        Text(formatDisplayTime(prayer.time))
-                            .font(.caption.monospacedDigit().weight(.semibold))
-                    }
-                    .padding(.vertical, 3)
-                    .padding(.horizontal, 6)
-                    .background(prayer.key == entry.response.nextPrayer.key ? Color.green.opacity(0.14) : Color.clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            HStack(spacing: 0) {
+                ForEach(rowPrayers, id: \.self) { prayer in
+                    PrayerTimeColumn(prayer: prayer, isNext: prayer.key == entry.response.nextPrayer.key)
+                        .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
+            .background(.white.opacity(0.62), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .containerBackground(for: .widget) {
-            LinearGradient(colors: [Color(red: 1.0, green: 0.97, blue: 0.93), Color(red: 0.90, green: 0.98, blue: 0.94)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            Color(red: 0.93, green: 0.93, blue: 0.91).opacity(0.70)
+        }
+    }
+}
+
+struct PrayerTimeColumn: View {
+    let prayer: Prayer
+    let isNext: Bool
+
+    var body: some View {
+        VStack(spacing: 7) {
+            Text(shortName(prayer))
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(.primary.opacity(0.70))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            Text(formatDisplayTime(prayer.time))
+                .font(.system(size: 16, weight: .semibold, design: .rounded).monospacedDigit())
+                .foregroundStyle(isNext ? .white : .primary.opacity(0.88))
+                .padding(.horizontal, isNext ? 10 : 0)
+                .padding(.vertical, isNext ? 5 : 0)
+                .background(isNext ? Color.primary.opacity(0.78) : Color.clear, in: Capsule())
+                .lineLimit(1)
+                .minimumScaleFactor(0.80)
         }
     }
 }

@@ -9,7 +9,7 @@ This folder contains a minimal iOS app shell plus WidgetKit extension for pray.b
 
 ## Current signing setup
 
-- Team ID: `B6CT95J3J5`
+- Team ID: `88M2R3XJZH`
 - App bundle ID: `bh.pray.app`
 - Widget bundle ID: `bh.pray.app.widget`
 - Signing style: Automatic
