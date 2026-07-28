@@ -1,11 +1,13 @@
 # pray.bh iOS + WidgetKit
 
-This folder contains a minimal iOS app shell plus WidgetKit extension for pray.bh.
+This folder contains a SwiftUI iOS app plus WidgetKit extension for Bahrain prayer times.
 
 ## Targets
 
-- `PrayBH`: SwiftUI app that opens `https://pray.bh/?source=ios-app` in a `WKWebView`.
-- `PrayBHWidgetExtension`: WidgetKit extension that fetches `https://pray.bh/api/prayer-times/today`.
+- `PrayBH`: SwiftUI app that computes Bahrain prayer times **offline / on-device** (no network for times).
+- `PrayBHWidgetExtension`: WidgetKit extension that uses the same shared local calculator.
+
+Both targets include `Shared/` (`PrayerTimesCalculator.swift`, `PrayerTimesLocal.swift`) — a port of the website’s TypeScript AWQAF algorithm. Optional website Links open Safari only when the user taps them; they are not required for core times.
 
 ## Current signing setup
 

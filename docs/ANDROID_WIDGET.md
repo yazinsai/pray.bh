@@ -58,15 +58,20 @@ Or from Android Studio terminal:
 - Tapping widget opens the offline native app.
 - Android refresh interval is set to 30 minutes; Android may throttle based on battery rules.
 
-## Release path later
+## Release path
 
-For Google Play:
+See the full Play Console checklist + generated assets:
+
+`docs/PLAY_STORE_RELEASE.md`
+
+Quick path:
 
 1. Create signing key in Android Studio.
 2. Generate signed App Bundle: Build → Generate Signed Bundle / APK → Android App Bundle.
 3. Upload `.aab` to Google Play Console.
-4. Use similar metadata/screenshots from `docs/APP_STORE_RELEASE.md`.
-5. Add privacy policy URL: `https://pray.bh/privacy`.
+4. Paste listing copy / upload screenshots from `docs/PLAY_STORE_RELEASE.md`.
+5. Privacy policy URL: `https://pray.bh/privacy`.
+6. Regenerate store assets anytime: `scripts/generate-play-store-assets.sh`.
 
 ## Notes
 

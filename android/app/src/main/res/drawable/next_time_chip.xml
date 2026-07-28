@@ -1,5 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#4B4D4D" />
+    <solid android:color="@color/widget_chip_background" />
     <corners android:radius="14dp" />
     <padding android:left="8dp" android:right="8dp" android:top="3dp" android:bottom="3dp" />
 </shape>

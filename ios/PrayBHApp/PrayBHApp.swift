@@ -10,53 +10,30 @@ struct PrayBHApp: App {
     }
 }
 
-struct PrayerTimesResponse: Decodable {
-    let date: String
-    let timezone: String
-    let prayers: [Prayer]
-    let nextPrayer: Prayer
-    let minutesUntilNextPrayer: Int
-}
-
-struct Prayer: Decodable, Identifiable, Hashable {
-    var id: String { key }
-    let key: String
-    let nameEn: String
-    let nameAr: String
-    let time: String
-}
-
 @MainActor
 final class PrayerTimesModel: ObservableObject {
-    @Published var response: PrayerTimesResponse = .placeholder
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var response: PrayerTimesResponse = PrayerTimesLocal.today()
     @Published var now = Date()
 
-    private let endpoint = URL(string: "https://pray.bh/api/prayer-times/today")!
+    private var timer: Timer?
 
     func start() {
-        Task { await refresh() }
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.now = Date() }
+        refresh()
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.now = Date()
+                // Recompute so minutesUntilNextPrayer stays live without network.
+                self.response = PrayerTimesLocal.today(now: self.now)
+            }
         }
     }
 
-    func refresh() async {
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            var request = URLRequest(url: endpoint)
-            request.cachePolicy = .reloadIgnoringLocalCacheData
-            request.timeoutInterval = 12
-            let (data, _) = try await URLSession.shared.data(for: request)
-            response = try JSONDecoder().decode(PrayerTimesResponse.self, from: data)
-            errorMessage = nil
-            WidgetCenter.shared.reloadAllTimelines()
-        } catch {
-            errorMessage = "Using sample times — pull to retry"
-        }
+    func refresh() {
+        now = Date()
+        response = PrayerTimesLocal.today(now: now)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 
@@ -71,24 +48,24 @@ struct PrayerHomeView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 18) {
-                        HeaderView(date: model.now, isLoading: model.isLoading)
+                        HeaderView(date: model.now)
                         NextPrayerRing(response: model.response)
                         PrayerList(response: model.response)
                         QuickLinksView()
-                        FooterView(errorMessage: model.errorMessage)
+                        FooterView()
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
                     .padding(.bottom, 28)
                 }
-                .refreshable { await model.refresh() }
+                .refreshable { model.refresh() }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
         }
         .task { model.start() }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { Task { await model.refresh() } }
+            if phase == .active { model.refresh() }
         }
     }
 }
@@ -124,7 +101,6 @@ struct AppBackground: View {
 
 struct HeaderView: View {
     let date: Date
-    let isLoading: Bool
 
     var body: some View {
         VStack(spacing: 6) {
@@ -143,10 +119,9 @@ struct HeaderView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(.white.opacity(0.55))
                         .frame(width: 48, height: 48)
-                    Image(systemName: isLoading ? "arrow.triangle.2.circlepath" : "moon.stars.fill")
+                    Image(systemName: "moon.stars.fill")
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(.green)
-                        .rotationEffect(.degrees(isLoading ? 90 : 0))
                 }
             }
 
@@ -307,15 +282,9 @@ struct QuickLinksView: View {
 }
 
 struct FooterView: View {
-    let errorMessage: String?
-
     var body: some View {
         VStack(spacing: 7) {
-            if let errorMessage {
-                Text(errorMessage)
-                    .foregroundStyle(.orange)
-            }
-            Text("Prayer times for Bahrain · powered by pray.bh")
+            Text("Offline Bahrain prayer times · computed locally")
                 .foregroundStyle(.secondary)
             Link("Open website", destination: URL(string: "https://pray.bh/?source=ios-app")!)
                 .font(.caption.weight(.semibold))
@@ -354,23 +323,6 @@ func timeUntilText(_ minutes: Int) -> String {
     let mins = minutes % 60
     if hours == 0 { return "in \(mins)m" }
     return "in \(hours)h \(mins)m"
-}
-
-extension PrayerTimesResponse {
-    static let placeholder = PrayerTimesResponse(
-        date: "2026-07-25",
-        timezone: "Asia/Bahrain",
-        prayers: [
-            Prayer(key: "fajr", nameEn: "Fajr", nameAr: "الفجر", time: "03:33"),
-            Prayer(key: "shurooq", nameEn: "Sunrise", nameAr: "الشروق", time: "05:00"),
-            Prayer(key: "dhuhr", nameEn: "Dhuhr", nameAr: "الظهر", time: "11:44"),
-            Prayer(key: "asr", nameEn: "Asr", nameAr: "العصر", time: "15:12"),
-            Prayer(key: "maghrib", nameEn: "Maghrib", nameAr: "المغرب", time: "18:29"),
-            Prayer(key: "isha", nameEn: "Isha", nameAr: "العشاء", time: "19:55")
-        ],
-        nextPrayer: Prayer(key: "dhuhr", nameEn: "Dhuhr", nameAr: "الظهر", time: "11:44"),
-        minutesUntilNextPrayer: 164
-    )
 }
 
 #Preview {

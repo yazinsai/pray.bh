@@ -4,3 +4,12 @@ coverage/
 .worktrees/
 ios/build/
 ios/*.xcresult
+ios/**/xcuserdata/
+android/keystore/
+android/app/keystore.properties
+*.jks
+*.p12
+*.keystore
+*.class
+*.backup
+.DS_Store

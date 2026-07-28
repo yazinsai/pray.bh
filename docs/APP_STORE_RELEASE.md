@@ -2,13 +2,13 @@
 
 This file is the copy/paste guide for publishing the iOS app and widget.
 
+**Privacy pitch (lead with this everywhere):** fully offline Bahrain prayer times. No location access, no creepy permissions, no MyGov / account sign-in, no tracking. Just today’s times and a widget.
+
 ## Files prepared
 
-Screenshots generated at:
+### iPhone 6.7"
 
-`docs/app-store-assets/screenshots/iphone-6-7/`
-
-Upload these in order:
+`docs/app-store-assets/screenshots/iphone-6-7/` — `1284 × 2778`
 
 1. `01-today-at-a-glance.png`
 2. `02-home-screen-widget.png`
@@ -16,13 +16,27 @@ Upload these in order:
 4. `04-live-refresh.png`
 5. `05-simple-design.png`
 
-All are iPhone 6.7-inch App Store screenshots: `1290 × 2796`.
-
-Regenerate them anytime:
-
 ```bash
 scripts/generate-app-store-assets.sh
 ```
+
+### iPad 13" (required if app runs on iPad)
+
+`docs/app-store-assets/screenshots/ipad-13/` — `2064 × 2752` portrait
+
+Upload under **13-inch iPad displays** in App Store Connect:
+
+1. `01-today-at-a-glance.png`
+2. `02-home-screen-widget.png`
+3. `03-full-prayer-list.png`
+4. `04-private-offline.png`
+5. `05-simple-design.png`
+
+```bash
+scripts/generate-ipad-app-store-assets.sh
+```
+
+Apple scales these down for smaller iPad sizes if you don’t upload separate sets.
 
 ## App Store Connect metadata
 
@@ -32,7 +46,7 @@ scripts/generate-app-store-assets.sh
 
 ### Subtitle
 
-`Bahrain prayer times & widget`
+`Offline Bahrain prayer times`
 
 ### Category
 
@@ -42,30 +56,31 @@ Alternative if you prefer: `Utilities`
 
 ### Promotional text
 
-`Simple Bahrain prayer times with a clean Home Screen widget for quick daily use.`
+`Fully offline Bahrain prayer times. No location access, no MyGov sign-in, no tracking — just today’s times and a Home Screen widget.`
 
 ### Description
 
 ```text
-pray.bh is a simple prayer times app built for Bahrain.
+pray.bh is a private, offline prayer times app for Bahrain.
 
-See today’s Fajr, Dhuhr, Asr, Maghrib, and Isha times in a clean native iPhone app, with Arabic labels and a Home Screen widget for quick access throughout the day.
+See today’s Fajr, Dhuhr, Asr, Maghrib, and Isha on your iPhone — no account, no MyGov login, no location permission, and nothing creepy in the background. Prayer times are for Bahrain; the app does not track where you are.
 
 Features:
-• Today’s Bahrain prayer times
+• Today’s Bahrain prayer times — works offline
 • Clear next-prayer highlight
 • Arabic and English prayer names
-• Pull-to-refresh inside the app
 • Home Screen widget with all daily prayer times
+• No sign-in, no ads, no trackers
+• No location, contacts, camera, microphone, or similar permissions
 • Simple, calm design for daily use
 
-The app is focused on Bahrain and designed to be fast, readable, and lightweight.
+Built for Bahrain. Private by default.
 ```
 
 ### Keywords
 
 ```text
-Bahrain,prayer,salah,adhan,Islam,Muslim,Fajr,Dhuhr,Asr,Maghrib,Isha,Manama,Muharraq,widget
+Bahrain,prayer,salah,adhan,Islam,Muslim,offline,privacy,Fajr,Dhuhr,Asr,Maghrib,Isha,widget,Manama
 ```
 
 ### Support URL
@@ -96,20 +111,38 @@ A privacy page has been added at `app/privacy/page.tsx`. Deploy the website befo
 
 ## App Privacy answers
 
-Use this for App Store Connect → App Privacy.
+Use this for App Store Connect → App Privacy. This is the important part — match the store copy.
 
 ### Data collection
 
 Select: **No, we do not collect data from this app**
 
-Rationale:
-- No account
-- No precise location
-- No ads
-- No third-party tracking
-- The app only fetches Bahrain prayer times from `https://pray.bh/api/prayer-times/today`
+### Why that answer is correct
 
-If Apple asks about server logs, standard server logs are not used to track users across apps/websites and are only for security/reliability.
+- **Fully offline** — prayer times are computed on-device (Swift port of the AWQAF/NOAA algorithm). App + widget make **no** network requests for times
+- **No MyGov / eKey / government sign-in** — and no Apple/Google/email account either
+- **No location permission** — fixed Bahrain reference coords baked into the binary; no GPS / Precise / Approximate Location APIs
+- **No other sensitive permissions** — Info.plist has no usage descriptions for camera, mic, contacts, photos, Bluetooth, Health, motion, tracking, etc.
+- **No ads, analytics SDKs, or ATT / IDFA tracking**
+- **No user profiles, purchase history, or contact syncing**
+- Nothing is sold or shared with data brokers
+
+If Apple asks about “tracking”: answer **No** — the app does not track users across apps or websites owned by other companies.
+
+Do not list data types. Optional “Open website” / city links open Safari only when the user taps them; core times never phone home.
+
+### Permissions checklist (for your own sanity before upload)
+
+Confirm the binary asks for none of these (and Info.plist has no matching usage strings):
+
+- Location (When In Use / Always / Precise)
+- Tracking (App Tracking Transparency)
+- Camera / Microphone
+- Contacts / Photos / Calendar / Reminders
+- Bluetooth / Local Network (beyond normal system networking if any)
+- Face ID / Health / Motion
+
+Expected: zero permission prompts on first launch.
 
 ## Age Rating
 
@@ -152,10 +185,10 @@ Then:
 
 1. App Store Connect → My Apps → `pray.bh`
 2. Create a new iOS app version if needed: `0.1.0`
-3. Fill metadata using the sections above
-4. Upload screenshots from `docs/app-store-assets/screenshots/iphone-6-7/`
+3. Fill metadata using the sections above (privacy-first subtitle, promo, description)
+4. Upload iPhone screenshots from `docs/app-store-assets/screenshots/iphone-6-7/` and iPad 13" screenshots from `docs/app-store-assets/screenshots/ipad-13/`
 5. Select the processed build under **Build**
-6. Complete **App Privacy** using the answers above
+6. Complete **App Privacy** → **No data collected**
 7. Complete **Age Rating**
 8. Pricing: choose `Free`
 9. Availability: choose Bahrain first, or all countries if you want broad access
@@ -166,17 +199,25 @@ Then:
 Paste this in App Review Notes:
 
 ```text
-pray.bh provides Bahrain prayer times and a Home Screen widget. The app does not require login. Open the app to view today’s prayer times; after installation, add the pray.bh widget from the iOS Home Screen widget picker.
+pray.bh shows Bahrain prayer times and a Home Screen widget.
+
+Privacy / how to review:
+• No account or MyGov sign-in — open the app and times appear.
+• No location or other sensitive permission prompts.
+• Fully offline: enable Airplane Mode; today’s times still calculate locally. No analytics or background tracking.
+
+After install, add the widget: long-press Home Screen → + → search “pray.bh” → add the medium widget.
 ```
 
 ## What testers/users do after install
 
 1. Install app
-2. Open app once
-3. Long-press Home Screen
-4. Tap `+`
-5. Search `pray.bh`
-6. Add the medium widget
+2. Open app once (no login)
+3. Confirm no permission dialogs appear
+4. Long-press Home Screen
+5. Tap `+`
+6. Search `pray.bh`
+7. Add the medium widget
 
 ## If Apple rejects
 
@@ -185,4 +226,5 @@ Common fixes:
 - **Privacy Policy URL unreachable** → deploy `https://pray.bh/privacy`
 - **Build missing** → wait for processing or upload the latest IPA again
 - **Metadata says widget but widget not visible** → tell reviewer to open the app once, then add widget from Home Screen
-- **Screenshots rejected** → regenerate with `scripts/generate-app-store-assets.sh`; current images are `1290 × 2796`
+- **Screenshots rejected / missing iPad 13"** → upload `docs/app-store-assets/screenshots/ipad-13/` (`2064 × 2752`); regenerate with `scripts/generate-ipad-app-store-assets.sh`. iPhone set: `scripts/generate-app-store-assets.sh` (`1284 × 2778`)
+- **Privacy mismatch** → store copy and App Privacy must stay aligned: no data collected, no MyGov/account, no location permission, offline-first

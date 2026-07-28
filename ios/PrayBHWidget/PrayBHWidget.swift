@@ -1,83 +1,40 @@
 import SwiftUI
 import WidgetKit
 
-struct PrayerTimesResponse: Decodable {
-    let date: String
-    let timezone: String
-    let prayers: [Prayer]
-    let nextPrayer: Prayer
-    let minutesUntilNextPrayer: Int
-}
-
-struct Prayer: Decodable, Hashable {
-    let key: String
-    let nameEn: String
-    let nameAr: String
-    let time: String
-}
-
 struct PrayerEntry: TimelineEntry {
     let date: Date
     let response: PrayerTimesResponse
-    let isPlaceholder: Bool
 
-    static let placeholder = PrayerEntry(
-        date: Date(),
-        response: PrayerTimesResponse(
-            date: "2026-07-25",
-            timezone: "Asia/Bahrain",
-            prayers: [
-                Prayer(key: "fajr", nameEn: "Fajr", nameAr: "الفجر", time: "03:33"),
-                Prayer(key: "shurooq", nameEn: "Sunrise", nameAr: "الشروق", time: "05:00"),
-                Prayer(key: "dhuhr", nameEn: "Dhuhr", nameAr: "الظهر", time: "11:44"),
-                Prayer(key: "asr", nameEn: "Asr", nameAr: "العصر", time: "15:12"),
-                Prayer(key: "maghrib", nameEn: "Maghrib", nameAr: "المغرب", time: "18:29"),
-                Prayer(key: "isha", nameEn: "Isha", nameAr: "العشاء", time: "19:55")
-            ],
-            nextPrayer: Prayer(key: "dhuhr", nameEn: "Dhuhr", nameAr: "الظهر", time: "11:44"),
-            minutesUntilNextPrayer: 164
-        ),
-        isPlaceholder: true
-    )
+    static var placeholder: PrayerEntry {
+        PrayerEntry(date: Date(), response: PrayerTimesLocal.today())
+    }
 }
 
 struct PrayerProvider: TimelineProvider {
-    private let endpoint = URL(string: "https://pray.bh/api/prayer-times/today")!
-
     func placeholder(in context: Context) -> PrayerEntry {
         PrayerEntry.placeholder
     }
 
     func getSnapshot(in context: Context, completion: @escaping (PrayerEntry) -> Void) {
-        Task {
-            completion(await fetchEntry())
-        }
+        completion(localEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<PrayerEntry>) -> Void) {
-        Task {
-            let entry = await fetchEntry()
-            let nextRefresh = Calendar.current.date(byAdding: .minute, value: refreshMinutes(for: entry), to: Date()) ?? Date().addingTimeInterval(15 * 60)
-            completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
-        }
+        let entry = localEntry()
+        let nextRefresh = Calendar.current.date(
+            byAdding: .minute,
+            value: refreshMinutes(for: entry),
+            to: Date()
+        ) ?? Date().addingTimeInterval(15 * 60)
+        completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
     }
 
-    private func fetchEntry() async -> PrayerEntry {
-        do {
-            var request = URLRequest(url: endpoint)
-            request.cachePolicy = .reloadIgnoringLocalCacheData
-            request.timeoutInterval = 10
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let response = try JSONDecoder().decode(PrayerTimesResponse.self, from: data)
-            return PrayerEntry(date: Date(), response: response, isPlaceholder: false)
-        } catch {
-            return PrayerEntry.placeholder
-        }
+    private func localEntry() -> PrayerEntry {
+        PrayerEntry(date: Date(), response: PrayerTimesLocal.today())
     }
 
     private func refreshMinutes(for entry: PrayerEntry) -> Int {
-        if entry.isPlaceholder { return 15 }
-        return max(5, min(entry.response.minutesUntilNextPrayer + 1, 60))
+        max(5, min(entry.response.minutesUntilNextPrayer + 1, 60))
     }
 }
 
@@ -100,7 +57,10 @@ struct PrayerWidgetView: View {
 }
 
 struct SmallPrayerWidget: View {
+    @Environment(\.colorScheme) private var colorScheme
     let entry: PrayerEntry
+
+    private var theme: WidgetTheme { WidgetTheme(colorScheme: colorScheme) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -119,22 +79,25 @@ struct SmallPrayerWidget: View {
                 .font(.title2.weight(.bold))
                 .minimumScaleFactor(0.75)
 
-            Text(formatDisplayTime(entry.response.nextPrayer.time))
+            Text(widgetFormatDisplayTime(entry.response.nextPrayer.time))
                 .font(.title3.monospacedDigit().weight(.semibold))
-                .foregroundStyle(.green)
+                .foregroundStyle(theme.accent)
 
-            Text(timeUntilText(entry.response.minutesUntilNextPrayer))
+            Text(widgetTimeUntilText(entry.response.minutesUntilNextPrayer))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
         .containerBackground(for: .widget) {
-            LinearGradient(colors: [Color(red: 1.0, green: 0.97, blue: 0.93), Color(red: 0.90, green: 0.98, blue: 0.94)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: theme.smallBackground, startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 }
 
 struct MediumPrayerWidget: View {
+    @Environment(\.colorScheme) private var colorScheme
     let entry: PrayerEntry
+
+    private var theme: WidgetTheme { WidgetTheme(colorScheme: colorScheme) }
 
     private var rowPrayers: [Prayer] {
         entry.response.prayers.filter { $0.key != "shurooq" }
@@ -144,32 +107,32 @@ struct MediumPrayerWidget: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 7) {
                 Circle()
-                    .fill(Color.primary.opacity(0.55))
+                    .fill(theme.topDot)
                     .frame(width: 8, height: 8)
 
                 Text(entry.date.formatted(.dateTime.weekday(.abbreviated).month(.wide).day()))
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(.primary.opacity(0.78))
+                    .foregroundStyle(theme.headerText)
 
                 Spacer()
 
                 Text("pray.bh")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.primary.opacity(0.62))
+                    .foregroundStyle(theme.brandText)
             }
 
             HStack(spacing: 0) {
                 ForEach(rowPrayers, id: \.self) { prayer in
-                    PrayerTimeColumn(prayer: prayer, isNext: prayer.key == entry.response.nextPrayer.key)
+                    PrayerTimeColumn(prayer: prayer, isNext: prayer.key == entry.response.nextPrayer.key, theme: theme)
                         .frame(maxWidth: .infinity)
                 }
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 12)
-            .background(.white.opacity(0.62), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(theme.panel, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .containerBackground(for: .widget) {
-            Color(red: 0.93, green: 0.93, blue: 0.91).opacity(0.70)
+            LinearGradient(colors: theme.mediumBackground, startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 }
@@ -177,25 +140,54 @@ struct MediumPrayerWidget: View {
 struct PrayerTimeColumn: View {
     let prayer: Prayer
     let isNext: Bool
+    let theme: WidgetTheme
 
     var body: some View {
         VStack(spacing: 7) {
             Text(shortName(prayer))
                 .font(.caption2.weight(.medium))
-                .foregroundStyle(.primary.opacity(0.70))
+                .foregroundStyle(theme.labelText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
-            Text(formatDisplayTime(prayer.time))
+            Text(widgetFormatDisplayTime(prayer.time))
                 .font(.system(size: 16, weight: .semibold, design: .rounded).monospacedDigit())
-                .foregroundStyle(isNext ? .white : .primary.opacity(0.88))
+                .foregroundStyle(isNext ? theme.chipText : theme.timeText)
                 .padding(.horizontal, isNext ? 10 : 0)
                 .padding(.vertical, isNext ? 5 : 0)
-                .background(isNext ? Color.primary.opacity(0.78) : Color.clear, in: Capsule())
+                .background(isNext ? theme.chip : Color.clear, in: Capsule())
                 .lineLimit(1)
                 .minimumScaleFactor(0.80)
         }
     }
+}
+
+struct WidgetTheme {
+    private let isDark: Bool
+
+    init(colorScheme: ColorScheme) {
+        isDark = colorScheme == .dark
+    }
+
+    var accent: Color { isDark ? Color(red: 0.43, green: 0.91, blue: 0.64) : Color.green }
+    var smallBackground: [Color] {
+        isDark
+            ? [Color(red: 0.10, green: 0.13, blue: 0.12), Color(red: 0.05, green: 0.08, blue: 0.07)]
+            : [Color(red: 1.0, green: 0.97, blue: 0.93), Color(red: 0.90, green: 0.98, blue: 0.94)]
+    }
+    var mediumBackground: [Color] {
+        isDark
+            ? [Color(red: 0.16, green: 0.18, blue: 0.17), Color(red: 0.08, green: 0.10, blue: 0.09)]
+            : [Color(red: 0.94, green: 0.94, blue: 0.91), Color(red: 0.88, green: 0.91, blue: 0.88)]
+    }
+    var panel: Color { isDark ? Color.white.opacity(0.10) : Color.white.opacity(0.66) }
+    var chip: Color { isDark ? Color.white.opacity(0.92) : Color(red: 0.12, green: 0.14, blue: 0.13).opacity(0.86) }
+    var chipText: Color { isDark ? Color(red: 0.07, green: 0.09, blue: 0.08) : .white }
+    var topDot: Color { isDark ? Color.white.opacity(0.68) : Color.black.opacity(0.44) }
+    var headerText: Color { isDark ? Color.white.opacity(0.82) : Color.black.opacity(0.70) }
+    var brandText: Color { isDark ? Color.white.opacity(0.66) : Color.black.opacity(0.56) }
+    var labelText: Color { isDark ? Color.white.opacity(0.68) : Color.black.opacity(0.60) }
+    var timeText: Color { isDark ? Color.white.opacity(0.90) : Color.black.opacity(0.84) }
 }
 
 struct RectangularPrayerWidget: View {
@@ -211,7 +203,7 @@ struct RectangularPrayerWidget: View {
                     .font(.headline.weight(.bold))
             }
             Spacer()
-            Text(formatDisplayTime(entry.response.nextPrayer.time))
+            Text(widgetFormatDisplayTime(entry.response.nextPrayer.time))
                 .font(.headline.monospacedDigit())
         }
     }
@@ -221,7 +213,7 @@ func shortName(_ prayer: Prayer) -> String {
     prayer.key == "shurooq" ? "Sunrise" : prayer.nameEn
 }
 
-func formatDisplayTime(_ time: String) -> String {
+func widgetFormatDisplayTime(_ time: String) -> String {
     let parts = time.split(separator: ":").compactMap { Int($0) }
     guard parts.count == 2 else { return time }
     let hour = parts[0]
@@ -230,7 +222,7 @@ func formatDisplayTime(_ time: String) -> String {
     return "\(displayHour):\(String(format: "%02d", minute))"
 }
 
-func timeUntilText(_ minutes: Int) -> String {
+func widgetTimeUntilText(_ minutes: Int) -> String {
     if minutes <= 0 { return "now" }
     let hours = minutes / 60
     let mins = minutes % 60
@@ -253,7 +245,7 @@ struct PrayBHWidget: Widget {
             PrayerWidgetView(entry: entry)
         }
         .configurationDisplayName("Bahrain Prayer Times")
-        .description("See the next prayer time from pray.bh without opening the app.")
+        .description("Offline Bahrain prayer times, computed on-device.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryInline])
     }
 }

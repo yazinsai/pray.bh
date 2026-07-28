@@ -1,0 +1,10 @@
+<resources>
+    <color name="widget_background">#1F2422</color>
+    <color name="widget_panel">#2A302E</color>
+    <color name="widget_header_text">#DDE5E1</color>
+    <color name="widget_brand_text">#B7C0BC</color>
+    <color name="widget_label_text">#AEB8B4</color>
+    <color name="widget_time_text">#F2F7F4</color>
+    <color name="widget_chip_background">#EAF2EE</color>
+    <color name="widget_chip_text">#101513</color>
+</resources>

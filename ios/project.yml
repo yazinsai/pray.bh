@@ -17,6 +17,7 @@ targets:
     platform: iOS
     sources:
       - path: PrayBHApp
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: bh.pray.app
@@ -29,6 +30,7 @@ targets:
     platform: iOS
     sources:
       - path: PrayBHWidget
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: bh.pray.app.widget
