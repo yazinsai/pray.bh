@@ -52,8 +52,7 @@ struct PrayerHomeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {
                     HeaderView(date: model.now)
-                    NextPrayerSummary(response: model.response)
-                    PrayerList(response: model.response)
+                    PrayerList(response: model.response, now: model.now)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
@@ -97,54 +96,27 @@ struct HeaderView: View {
     }
 }
 
-struct NextPrayerSummary: View {
-    let response: PrayerTimesResponse
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Next prayer")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Color(.secondaryLabel))
-
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(response.nextPrayer.nameEn)
-                        .font(.title2.weight(.bold))
-                    Text(response.nextPrayer.nameAr)
-                        .font(.subheadline)
-                        .foregroundStyle(Color(.secondaryLabel))
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(formatDisplayTime(response.nextPrayer.time))
-                        .font(.system(size: 32, weight: .bold, design: .rounded).monospacedDigit())
-                        .foregroundStyle(Brand.accent)
-                    Text(timeUntilText(response.minutesUntilNextPrayer))
-                        .font(.subheadline)
-                        .foregroundStyle(Color(.secondaryLabel))
-                }
-            }
-        }
-        .padding(.bottom, 20)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color(.separator))
-                .frame(height: 0.5)
-        }
-    }
-}
-
 struct PrayerList: View {
     let response: PrayerTimesResponse
+    let now: Date
+
+    private var currentMinutes: Int {
+        PrayerTimesLocal.bahrainMinutesNow(from: now)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             ForEach(Array(response.prayers.enumerated()), id: \.element.id) { index, prayer in
-                PrayerRow(prayer: prayer, isNext: prayer.key == response.nextPrayer.key)
+                let isNext = prayer.key == response.nextPrayer.key
+                let isPast = !isNext && PrayerTimesLocal.timeToMinutes(prayer.time) < currentMinutes
+                PrayerRow(
+                    prayer: prayer,
+                    isNext: isNext,
+                    isPast: isPast,
+                    countdownText: isNext ? timeUntilText(response.minutesUntilNextPrayer) : nil
+                )
                 if index < response.prayers.count - 1 {
-                    Divider()
+                    Divider().opacity(isPast ? 0.38 : 1)
                 }
             }
         }
@@ -154,6 +126,8 @@ struct PrayerList: View {
 struct PrayerRow: View {
     let prayer: Prayer
     let isNext: Bool
+    let isPast: Bool
+    let countdownText: String?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -172,11 +146,19 @@ struct PrayerRow: View {
 
             Spacer()
 
-            Text(formatDisplayTime(prayer.time))
-                .font(.body.monospacedDigit().weight(isNext ? .semibold : .regular))
-                .foregroundStyle(isNext ? Brand.accent : Color(.label))
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(formatDisplayTime(prayer.time))
+                    .font(.body.monospacedDigit().weight(isNext ? .semibold : .regular))
+                    .foregroundStyle(isNext ? Brand.accent : Color(.label))
+                if let countdownText {
+                    Text(countdownText)
+                        .font(.caption)
+                        .foregroundStyle(Color(.secondaryLabel))
+                }
+            }
         }
         .padding(.vertical, 14)
+        .opacity(isPast ? 0.38 : 1)
     }
 }
 
