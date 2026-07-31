@@ -1,4 +1,10 @@
 <resources>
+    <color name="brand_accent">#2E7561</color>
+    <color name="app_background">#FFFFFF</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#6C6C70</color>
+    <color name="divider_color">#E5E5EA</color>
+
     <color name="widget_background">#00000000</color>
     <color name="widget_panel">#FAF8F4</color>
     <color name="widget_gold">#8F6A1C</color>

@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Center sun disc -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,12 m-4.5,0 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0" />
+    <!-- Sun rays -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M12,2 L12,4.5 M12,19.5 L12,22 M2,12 L4.5,12 M19.5,12 L22,12 M4.93,4.93 L6.7,6.7 M17.3,17.3 L19.07,19.07 M4.93,19.07 L6.7,17.3 M17.3,6.7 L19.07,4.93"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

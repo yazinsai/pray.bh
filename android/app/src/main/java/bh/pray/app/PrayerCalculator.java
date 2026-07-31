@@ -49,14 +49,20 @@ public final class PrayerCalculator {
         return "fajr";
     }
 
-    static int minutesUntil(Map<String, String> times, String key, Calendar now) {
+    public static int minutesUntil(Map<String, String> times, String key, Calendar now) {
         int current = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
         int target = toMinutes(times.get(key));
         int diff = target - current;
         return diff < 0 ? diff + 1440 : diff;
     }
 
-    static String formatDisplay(String time24) {
+    public static boolean isPast(String key, String time24, String nextKey, Calendar now) {
+        if (key.equals(nextKey)) return false;
+        int currentMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+        return toMinutes(time24) < currentMinutes;
+    }
+
+    public static String formatDisplay(String time24) {
         int mins = toMinutes(time24);
         int hour = mins / 60;
         int minute = mins % 60;
@@ -64,13 +70,17 @@ public final class PrayerCalculator {
         return displayHour + ":" + String.format(Locale.US, "%02d", minute);
     }
 
-    static String formatDisplayWithPeriod(String time24) {
+    public static String formatDisplayWithPeriod(String time24) {
         int mins = toMinutes(time24);
         int hour = mins / 60;
         return formatDisplay(time24) + (hour >= 12 ? " PM" : " AM");
     }
 
-    static String label(String key) {
+    public static String formatDisplayTime(String time24) {
+        return formatDisplayWithPeriod(time24);
+    }
+
+    public static String label(String key) {
         switch (key) {
             case "fajr": return "Fajr";
             case "shurooq": return "Sunrise";
@@ -82,7 +92,7 @@ public final class PrayerCalculator {
         }
     }
 
-    static String arabicLabel(String key) {
+    public static String arabicLabel(String key) {
         switch (key) {
             case "fajr": return "الفجر";
             case "shurooq": return "الشروق";
@@ -94,15 +104,37 @@ public final class PrayerCalculator {
         }
     }
 
-    static String timeUntilText(int minutes) {
+    public static String timeUntilText(int minutes) {
         if (minutes <= 0) return "now";
         int h = minutes / 60;
         int m = minutes % 60;
         return h == 0 ? "in " + m + "m" : "in " + h + "h " + m + "m";
     }
 
-    static String todayHeader(Calendar cal) {
+    public static String gregorianDateHeader(Calendar cal) {
         return new SimpleDateFormat("EEEE, MMMM d", Locale.US).format(cal.getTime());
+    }
+
+    public static String currentTimeString(Calendar cal) {
+        return new SimpleDateFormat("h:mm a", Locale.US).format(cal.getTime());
+    }
+
+    public static String hijriDateString(Calendar cal) {
+        try {
+            java.time.LocalDate localDate = java.time.LocalDate.of(
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.DAY_OF_MONTH)
+            );
+            java.time.chrono.HijrahDate hijrahDate = java.time.chrono.HijrahChronology.INSTANCE.date(localDate);
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(
+                "d MMMM yyyy",
+                Locale.US
+            );
+            return hijrahDate.format(formatter) + " AH";
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     public static String hijriDate(Calendar cal, boolean isArabic) {
