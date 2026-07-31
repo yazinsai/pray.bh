@@ -107,20 +107,19 @@ struct MediumPrayerWidget: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
                 Text(hijriDateString(from: entry.date, isArabic: isArabic))
-                    .font(.system(size: isArabic ? 12.5 : 11.5, weight: .medium, design: .rounded))
+                    .font(.system(size: isArabic ? 12.5 : 12, weight: .medium, design: .rounded))
                     .foregroundStyle(theme.metaText)
 
                 Spacer()
 
                 Text(isArabic ? "البحرين" : "Bahrain")
-                    .font(.system(size: isArabic ? 12.5 : 11.5, weight: .semibold, design: .rounded))
+                    .font(.system(size: isArabic ? 12.5 : 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(theme.metaText)
             }
-            .padding(.horizontal, 22)
-            .padding(.top, 9)
+            .padding(.horizontal, 18)
 
             HStack(spacing: 0) {
                 ForEach(Array(rowPrayers.enumerated()), id: \.element.id) { index, prayer in
@@ -136,24 +135,22 @@ struct MediumPrayerWidget: View {
                         Rectangle()
                             .fill(
                                 LinearGradient(
-                                    colors: [.clear, theme.gold.opacity(0.18), .clear],
+                                    colors: [.clear, theme.gold.opacity(0.25), .clear],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
                             )
-                            .frame(width: 0.5)
-                            .padding(.vertical, 14)
+                            .frame(width: 0.5, height: 24)
                     }
                 }
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 6)
+            .padding(.horizontal, 6)
         }
         .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
-        .background(theme.blackPanel, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-        .overlay {
+        .containerBackground(for: .widget) {
             ZStack {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                theme.blackPanel
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .strokeBorder(
                         LinearGradient(
                             colors: [theme.gold.opacity(0.42), theme.gold.opacity(0.28)],
@@ -162,14 +159,11 @@ struct MediumPrayerWidget: View {
                         ),
                         lineWidth: 1
                     )
-                RoundedRectangle(cornerRadius: 12.5, style: .continuous)
+                RoundedRectangle(cornerRadius: 17.5, style: .continuous)
                     .strokeBorder(theme.gold.opacity(0.14), lineWidth: 0.5)
                     .padding(2.5)
                 CornerIslamicStar(color: theme.gold.opacity(0.40))
             }
-        }
-        .containerBackground(for: .widget) {
-            Color.clear
         }
     }
 }
@@ -183,18 +177,18 @@ struct PrayerTimeColumn: View {
     var body: some View {
         VStack(spacing: 2) {
             Text("▾")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(isNext ? theme.activeGreen : Color.clear)
-                .frame(height: 7)
+                .frame(height: 10)
 
             Text(shortName(prayer, isArabic: isArabic))
-                .font(.system(size: isArabic ? 11.5 : 10.5, weight: .medium, design: .rounded))
+                .font(.system(size: isArabic ? 12 : 11, weight: .medium, design: .rounded))
                 .foregroundStyle(isNext ? theme.activeGreen : theme.nameText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
             Text(localizedWidgetTime(prayer.time, isArabic: isArabic))
-                .font(.system(size: 15, weight: .semibold, design: .rounded).monospacedDigit())
+                .font(.system(size: 16, weight: .bold, design: .rounded).monospacedDigit())
                 .foregroundStyle(isNext ? theme.activeGreen : theme.timeText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.80)
@@ -274,7 +268,7 @@ struct CornerIslamicStar: View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
-            let pad: CGFloat = 8
+            let pad: CGFloat = 10
 
             ZStack {
                 Star8Point()

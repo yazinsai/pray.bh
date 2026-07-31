@@ -95,7 +95,7 @@ Deploy the privacy page before submission so the URL works.
 
 ### Version
 
-`0.1.0` (versionCode `4`)
+`0.1.0` (versionCode `5`)
 
 ## Package name registration (public key)
 

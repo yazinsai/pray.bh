@@ -8,7 +8,7 @@ This adds a minimal native Android companion app for `pray.bh`.
 - Home Screen widget: offline horizontal single-row prayer times
 - Widget/API dependency: none at runtime; same Bahrain calculation is embedded locally
 - Package/application ID: `bh.pray.app`
-- Version: `0.1.0` / code `4`
+- Version: `0.1.0` / code `5`
 
 ## Files
 

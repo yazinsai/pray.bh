@@ -13,51 +13,55 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="4dp">
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp">
 
                 <TextView
                     android:id="@+id/widget_hijri_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
                     android:textColor="@color/widget_header_text"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/widget_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
                     android:textColor="@color/widget_brand_text"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <include layout="@layout/widget_prayer_column_fajr" />
                 <ImageView
                     android:layout_width="1dp"
-                    android:layout_height="24dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@null"
                     android:scaleType="fitXY"
@@ -65,7 +69,7 @@
                 <include layout="@layout/widget_prayer_column_dhuhr" />
                 <ImageView
                     android:layout_width="1dp"
-                    android:layout_height="24dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@null"
                     android:scaleType="fitXY"
@@ -73,7 +77,7 @@
                 <include layout="@layout/widget_prayer_column_asr" />
                 <ImageView
                     android:layout_width="1dp"
-                    android:layout_height="24dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@null"
                     android:scaleType="fitXY"
@@ -81,7 +85,7 @@
                 <include layout="@layout/widget_prayer_column_maghrib" />
                 <ImageView
                     android:layout_width="1dp"
-                    android:layout_height="24dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:contentDescription="@null"
                     android:scaleType="fitXY"
@@ -92,38 +96,38 @@
 
         <!-- Corner Islamic Ornaments -->
         <ImageView
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
             android:layout_gravity="top|left"
-            android:layout_marginLeft="6dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
             android:contentDescription="@null"
             android:src="@drawable/widget_corner_star" />
 
         <ImageView
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
             android:layout_gravity="top|right"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
             android:contentDescription="@null"
             android:src="@drawable/widget_corner_star" />
 
         <ImageView
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
             android:layout_gravity="bottom|left"
-            android:layout_marginBottom="6dp"
-            android:layout_marginLeft="6dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:contentDescription="@null"
             android:src="@drawable/widget_corner_star" />
 
         <ImageView
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
             android:layout_gravity="bottom|right"
-            android:layout_marginBottom="6dp"
-            android:layout_marginRight="6dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
             android:contentDescription="@null"
             android:src="@drawable/widget_corner_star" />
     </FrameLayout>
