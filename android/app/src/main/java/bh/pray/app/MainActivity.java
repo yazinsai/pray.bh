@@ -12,6 +12,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -75,6 +76,15 @@ public class MainActivity extends Activity {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(dp(20), dp(12), dp(20), dp(32));
         root.setBackgroundColor(getColor(R.color.app_background));
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            view.setPadding(
+                dp(20),
+                insets.getSystemWindowInsetTop() + dp(12),
+                dp(20),
+                insets.getSystemWindowInsetBottom() + dp(32)
+            );
+            return insets;
+        });
 
         // --- HeaderView ---
         LinearLayout header = new LinearLayout(this);
@@ -157,6 +167,7 @@ public class MainActivity extends Activity {
         ));
 
         setContentView(scrollView);
+        root.requestApplyInsets();
     }
 
     private void updateUI() {

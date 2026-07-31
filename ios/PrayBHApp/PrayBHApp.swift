@@ -54,6 +54,8 @@ struct PrayerHomeView: View {
             }
             .background(Color(.systemBackground))
             .refreshable { model.refresh() }
+            .safeAreaPadding(.top, 12)
+            .safeAreaPadding(.bottom, 16)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
         }

@@ -40,6 +40,7 @@ platform :ios do
     api_key = asc_api_key
     upload_to_testflight(
       api_key: api_key,
+      app_identifier: "bh.pray.app",
       ipa: IOS_IPA,
       skip_waiting_for_build_processing: true,
       changelog: ENV["RELEASE_NOTES"] || "Latest release update."
@@ -51,6 +52,7 @@ platform :ios do
     api_key = asc_api_key
     upload_to_testflight(
       api_key: api_key,
+      app_identifier: "bh.pray.app",
       ipa: IOS_IPA,
       skip_waiting_for_build_processing: true,
       changelog: ENV["RELEASE_NOTES"] || "Latest release update."
