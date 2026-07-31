@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A04E613009FA367C20BDCE5 /* PrayerDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */; };
 		1FC3891D74B6D61BEE29EC56 /* PrayerTimesLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3568563782C93239A773B /* PrayerTimesLocal.swift */; };
 		28A52E54D9DC6B015BCC6058 /* PrayerTimesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98801591F0638FBE8948A3B2 /* PrayerTimesCalculator.swift */; };
 		47AED387E8CCD76A0605B2EA /* PrayerTimesLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3568563782C93239A773B /* PrayerTimesLocal.swift */; };
 		4A2E9B6719E7EC2B218A8D70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */; };
 		5406E8DED7CF8BF67FBEF034 /* PrayerTimesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98801591F0638FBE8948A3B2 /* PrayerTimesCalculator.swift */; };
+		544F9EC0F0E92A2F87E7F9C2 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */; };
+		8763B66C56BA2B973436AECD /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */; };
 		927A379C19A74A6276A0EA53 /* PrayBHWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		96B0E6133F17B4CF978C956C /* PrayerDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */; };
 		CD362264BA14E5044536C687 /* PrayBHWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8AD55E5421E313325B9348 /* PrayBHWidget.swift */; };
 		F42C16B37ADEA2EE4F6FF565 /* PrayBHApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669EC81997331EEB946D7F2C /* PrayBHApp.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +50,8 @@
 		28EE761BE2C67F3A00060CD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4AD7E46FA9CC14848FEC9227 /* PrayBH.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrayBH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		669EC81997331EEB946D7F2C /* PrayBHApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayBHApp.swift; sourceTree = "<group>"; };
+		670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerDisplay.swift; sourceTree = "<group>"; };
+		7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
 		74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrayBHWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E3568563782C93239A773B /* PrayerTimesLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesLocal.swift; sourceTree = "<group>"; };
@@ -95,6 +101,8 @@
 		DCE5D2F847F198860D23DBA9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */,
+				670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */,
 				98801591F0638FBE8948A3B2 /* PrayerTimesCalculator.swift */,
 				92E3568563782C93239A773B /* PrayerTimesLocal.swift */,
 			);
@@ -196,7 +204,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				544F9EC0F0E92A2F87E7F9C2 /* BrandTheme.swift in Sources */,
 				CD362264BA14E5044536C687 /* PrayBHWidget.swift in Sources */,
+				1A04E613009FA367C20BDCE5 /* PrayerDisplay.swift in Sources */,
 				5406E8DED7CF8BF67FBEF034 /* PrayerTimesCalculator.swift in Sources */,
 				1FC3891D74B6D61BEE29EC56 /* PrayerTimesLocal.swift in Sources */,
 			);
@@ -206,7 +216,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8763B66C56BA2B973436AECD /* BrandTheme.swift in Sources */,
 				F42C16B37ADEA2EE4F6FF565 /* PrayBHApp.swift in Sources */,
+				96B0E6133F17B4CF978C956C /* PrayerDisplay.swift in Sources */,
 				28A52E54D9DC6B015BCC6058 /* PrayerTimesCalculator.swift in Sources */,
 				47AED387E8CCD76A0605B2EA /* PrayerTimesLocal.swift in Sources */,
 			);

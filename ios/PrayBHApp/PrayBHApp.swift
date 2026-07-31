@@ -37,12 +37,6 @@ final class PrayerTimesModel: ObservableObject {
     }
 }
 
-/// The only custom color in the screen — everything else uses system colors
-/// so text, backgrounds, and dividers adapt to light/dark mode for free.
-enum Brand {
-    static let accent = Color(red: 0.18, green: 0.46, blue: 0.38)
-}
-
 struct PrayerHomeView: View {
     @StateObject private var model = PrayerTimesModel()
     @Environment(\.scenePhase) private var scenePhase
@@ -100,15 +94,11 @@ struct PrayerList: View {
     let response: PrayerTimesResponse
     let now: Date
 
-    private var currentMinutes: Int {
-        PrayerTimesLocal.bahrainMinutesNow(from: now)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             ForEach(Array(response.prayers.enumerated()), id: \.element.id) { index, prayer in
                 let isNext = prayer.key == response.nextPrayer.key
-                let isPast = !isNext && PrayerTimesLocal.timeToMinutes(prayer.time) < currentMinutes
+                let isPast = response.isPast(prayer, now: now)
                 PrayerRow(
                     prayer: prayer,
                     isNext: isNext,
@@ -159,18 +149,6 @@ struct PrayerRow: View {
         }
         .padding(.vertical, 14)
         .opacity(isPast ? 0.38 : 1)
-    }
-}
-
-func iconName(for key: String) -> String {
-    switch key {
-    case "fajr": return "sunrise.fill"
-    case "shurooq": return "sun.max.fill"
-    case "dhuhr": return "sun.max"
-    case "asr": return "sun.haze.fill"
-    case "maghrib": return "sunset.fill"
-    case "isha": return "moon.stars.fill"
-    default: return "clock.fill"
     }
 }
 
