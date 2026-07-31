@@ -95,44 +95,81 @@ struct SmallPrayerWidget: View {
 
 struct MediumPrayerWidget: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.locale) private var locale
     let entry: PrayerEntry
 
     private var theme: WidgetTheme { WidgetTheme(colorScheme: colorScheme) }
+    private var isArabic: Bool { locale.language.languageCode?.identifier == "ar" }
 
     private var rowPrayers: [Prayer] {
-        entry.response.prayers.filter { $0.key != "shurooq" }
+        let prayers = entry.response.prayers.filter { $0.key != "shurooq" }
+        return isArabic ? prayers.reversed() : prayers
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 7) {
-                Circle()
-                    .fill(theme.topDot)
-                    .frame(width: 8, height: 8)
-
-                Text(entry.date.formatted(.dateTime.weekday(.abbreviated).month(.wide).day()))
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(theme.headerText)
+        VStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(hijriDateString(from: entry.date, isArabic: isArabic))
+                    .font(.system(size: isArabic ? 12.5 : 11.5, weight: .medium, design: .rounded))
+                    .foregroundStyle(theme.metaText)
 
                 Spacer()
 
-                Text("pray.bh")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(theme.brandText)
+                Text(isArabic ? "البحرين" : "Bahrain")
+                    .font(.system(size: isArabic ? 12.5 : 11.5, weight: .semibold, design: .rounded))
+                    .foregroundStyle(theme.metaText)
             }
+            .padding(.horizontal, 22)
+            .padding(.top, 9)
 
             HStack(spacing: 0) {
-                ForEach(rowPrayers, id: \.self) { prayer in
-                    PrayerTimeColumn(prayer: prayer, isNext: prayer.key == entry.response.nextPrayer.key, theme: theme)
-                        .frame(maxWidth: .infinity)
+                ForEach(Array(rowPrayers.enumerated()), id: \.element.id) { index, prayer in
+                    PrayerTimeColumn(
+                        prayer: prayer,
+                        isNext: prayer.key == entry.response.nextPrayer.key,
+                        isArabic: isArabic,
+                        theme: theme
+                    )
+                    .frame(maxWidth: .infinity)
+
+                    if index < rowPrayers.count - 1 {
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.clear, theme.gold.opacity(0.18), .clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(width: 0.5)
+                            .padding(.vertical, 14)
+                    }
                 }
             }
             .padding(.horizontal, 8)
-            .padding(.vertical, 12)
-            .background(theme.panel, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(.bottom, 6)
+        }
+        .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
+        .background(theme.blackPanel, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .overlay {
+            ZStack {
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [theme.gold.opacity(0.42), theme.gold.opacity(0.28)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+                RoundedRectangle(cornerRadius: 12.5, style: .continuous)
+                    .strokeBorder(theme.gold.opacity(0.14), lineWidth: 0.5)
+                    .padding(2.5)
+                CornerIslamicStar(color: theme.gold.opacity(0.40))
+            }
         }
         .containerBackground(for: .widget) {
-            LinearGradient(colors: theme.mediumBackground, startPoint: .topLeading, endPoint: .bottomTrailing)
+            Color.clear
         }
     }
 }
@@ -140,22 +177,25 @@ struct MediumPrayerWidget: View {
 struct PrayerTimeColumn: View {
     let prayer: Prayer
     let isNext: Bool
+    let isArabic: Bool
     let theme: WidgetTheme
 
     var body: some View {
-        VStack(spacing: 7) {
-            Text(shortName(prayer))
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(theme.labelText)
+        VStack(spacing: 2) {
+            Text("▾")
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(isNext ? theme.activeGreen : Color.clear)
+                .frame(height: 7)
+
+            Text(shortName(prayer, isArabic: isArabic))
+                .font(.system(size: isArabic ? 11.5 : 10.5, weight: .medium, design: .rounded))
+                .foregroundStyle(isNext ? theme.activeGreen : theme.nameText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
-            Text(widgetFormatDisplayTime(prayer.time))
-                .font(.system(size: 16, weight: .semibold, design: .rounded).monospacedDigit())
-                .foregroundStyle(isNext ? theme.chipText : theme.timeText)
-                .padding(.horizontal, isNext ? 10 : 0)
-                .padding(.vertical, isNext ? 5 : 0)
-                .background(isNext ? theme.chip : Color.clear, in: Capsule())
+            Text(localizedWidgetTime(prayer.time, isArabic: isArabic))
+                .font(.system(size: 15, weight: .semibold, design: .rounded).monospacedDigit())
+                .foregroundStyle(isNext ? theme.activeGreen : theme.timeText)
                 .lineLimit(1)
                 .minimumScaleFactor(0.80)
         }
@@ -169,25 +209,43 @@ struct WidgetTheme {
         isDark = colorScheme == .dark
     }
 
-    var accent: Color { isDark ? Color(red: 0.43, green: 0.91, blue: 0.64) : Color.green }
+    var accent: Color { activeGreen }
     var smallBackground: [Color] {
         isDark
-            ? [Color(red: 0.10, green: 0.13, blue: 0.12), Color(red: 0.05, green: 0.08, blue: 0.07)]
-            : [Color(red: 1.0, green: 0.97, blue: 0.93), Color(red: 0.90, green: 0.98, blue: 0.94)]
+            ? [Color(red: 0.03, green: 0.03, blue: 0.025), Color(red: 0.10, green: 0.08, blue: 0.045)]
+            : [Color(red: 0.98, green: 0.97, blue: 0.94), Color(red: 0.94, green: 0.92, blue: 0.88)]
     }
-    var mediumBackground: [Color] {
+    var mediumBackground: [Color] { [Color.clear, Color.clear] }
+    var blackPanel: Color {
         isDark
-            ? [Color(red: 0.16, green: 0.18, blue: 0.17), Color(red: 0.08, green: 0.10, blue: 0.09)]
-            : [Color(red: 0.94, green: 0.94, blue: 0.91), Color(red: 0.88, green: 0.91, blue: 0.88)]
+            ? Color(red: 0.015, green: 0.014, blue: 0.012).opacity(0.96)
+            : Color(red: 0.98, green: 0.97, blue: 0.94)
     }
-    var panel: Color { isDark ? Color.white.opacity(0.10) : Color.white.opacity(0.66) }
-    var chip: Color { isDark ? Color.white.opacity(0.92) : Color(red: 0.12, green: 0.14, blue: 0.13).opacity(0.86) }
-    var chipText: Color { isDark ? Color(red: 0.07, green: 0.09, blue: 0.08) : .white }
-    var topDot: Color { isDark ? Color.white.opacity(0.68) : Color.black.opacity(0.44) }
-    var headerText: Color { isDark ? Color.white.opacity(0.82) : Color.black.opacity(0.70) }
-    var brandText: Color { isDark ? Color.white.opacity(0.66) : Color.black.opacity(0.56) }
-    var labelText: Color { isDark ? Color.white.opacity(0.68) : Color.black.opacity(0.60) }
-    var timeText: Color { isDark ? Color.white.opacity(0.90) : Color.black.opacity(0.84) }
+    var gold: Color {
+        isDark ? Color(red: 0.79, green: 0.61, blue: 0.25) : Color(red: 0.58, green: 0.42, blue: 0.12)
+    }
+    var divider: Color { gold.opacity(isDark ? 0.58 : 0.35) }
+    var activeGreen: Color {
+        isDark ? Color(red: 0.25, green: 0.92, blue: 0.36) : Color(red: 0.02, green: 0.52, blue: 0.30)
+    }
+    var timeText: Color {
+        isDark ? Color.white.opacity(0.96) : Color(red: 0.08, green: 0.12, blue: 0.10)
+    }
+    var nameText: Color {
+        isDark ? Color.white.opacity(0.85) : Color(red: 0.30, green: 0.36, blue: 0.33)
+    }
+    var metaText: Color {
+        isDark ? gold.opacity(0.80) : Color(red: 0.52, green: 0.38, blue: 0.10)
+    }
+    var panel: Color { blackPanel }
+    var hairlineBorder: Color { gold }
+    var cardShadow: Color { isDark ? .black.opacity(0.35) : .black.opacity(0.08) }
+    var chip: Color { activeGreen }
+    var chipText: Color { isDark ? .black : .white }
+    var topDot: Color { gold }
+    var headerText: Color { timeText }
+    var brandText: Color { gold }
+    var labelText: Color { timeText }
 }
 
 struct RectangularPrayerWidget: View {
@@ -209,8 +267,89 @@ struct RectangularPrayerWidget: View {
     }
 }
 
-func shortName(_ prayer: Prayer) -> String {
-    prayer.key == "shurooq" ? "Sunrise" : prayer.nameEn
+struct CornerIslamicStar: View {
+    let color: Color
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let pad: CGFloat = 8
+
+            ZStack {
+                Star8Point()
+                    .fill(color)
+                    .frame(width: 8.5, height: 8.5)
+                    .position(x: pad, y: pad)
+
+                Star8Point()
+                    .fill(color)
+                    .frame(width: 8.5, height: 8.5)
+                    .position(x: w - pad, y: pad)
+
+                Star8Point()
+                    .fill(color)
+                    .frame(width: 8.5, height: 8.5)
+                    .position(x: pad, y: h - pad)
+
+                Star8Point()
+                    .fill(color)
+                    .frame(width: 8.5, height: 8.5)
+                    .position(x: w - pad, y: h - pad)
+            }
+        }
+    }
+}
+
+struct Star8Point: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let cx = rect.midX
+        let cy = rect.midY
+        let r = min(rect.width, rect.height) / 2
+        let innerR = r * 0.42
+
+        for i in 0..<16 {
+            let angle = (Double(i) * .pi / 8.0) - (.pi / 2.0)
+            let radius = i % 2 == 0 ? r : innerR
+            let x = cx + CGFloat(cos(angle)) * radius
+            let y = cy + CGFloat(sin(angle)) * radius
+            if i == 0 {
+                path.move(to: CGPoint(x: x, y: y))
+            } else {
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+        }
+        path.closeSubpath()
+        return path
+    }
+}
+
+func hijriDateString(from date: Date, isArabic: Bool) -> String {
+    let calendar = Calendar(identifier: .islamicUmmAlQura)
+    let formatter = DateFormatter()
+    formatter.calendar = calendar
+    formatter.locale = Locale(identifier: isArabic ? "ar_BH@numbers=arab" : "en")
+    formatter.dateFormat = "d MMMM yyyy"
+    return formatter.string(from: date)
+}
+
+func shortName(_ prayer: Prayer, isArabic: Bool = false) -> String {
+    if prayer.key == "shurooq" { return isArabic ? "الشروق" : "Sunrise" }
+    return isArabic ? prayer.nameAr : prayer.nameEn
+}
+
+func localizedWidgetTime(_ time: String, isArabic: Bool) -> String {
+    let display = widgetFormatDisplayTime(time)
+    guard isArabic else { return display }
+    let formatter = NumberFormatter()
+    formatter.locale = Locale(identifier: "ar")
+    return display.map { ch in
+        if let digit = Int(String(ch)), let localized = formatter.string(from: NSNumber(value: digit)) {
+            return localized
+        }
+        return String(ch)
+    }.joined()
 }
 
 func widgetFormatDisplayTime(_ time: String) -> String {
@@ -247,6 +386,7 @@ struct PrayBHWidget: Widget {
         .configurationDisplayName("Bahrain Prayer Times")
         .description("Offline Bahrain prayer times, computed on-device.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryInline])
+        .contentMarginsDisabled()
     }
 }
 

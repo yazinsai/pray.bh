@@ -244,12 +244,32 @@ write_homescreen_html() {
     padding: 110px 36px 36px;
   }
   .widget {
+    position: relative;
     border-radius: 42px;
     background: rgba(255, 252, 246, 0.92);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     box-shadow: 0 18px 40px rgba(0,0,0,0.18);
     padding: 28px 26px 30px;
+    border: 1.25px solid rgba(200, 160, 64, 0.75);
+  }
+  .widget::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 0.75px solid rgba(200, 160, 64, 0.35);
+    border-radius: 38px;
+    pointer-events: none;
+  }
+  .widget::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 42px;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cg fill='%23C8A040' opacity='0.75'%3E%3Cpolygon points='14,6 15.5,10 19.5,11.5 15.5,13 14,17 12.5,13 8.5,11.5 12.5,10'/%3E%3Cg transform='translate(100%25,0) scale(-1,1)'%3E%3Cpolygon points='14,6 15.5,10 19.5,11.5 15.5,13 14,17 12.5,13 8.5,11.5 12.5,10'/%3E%3C/g%3E%3Cg transform='translate(0,100%25) scale(1,-1)'%3E%3Cpolygon points='14,6 15.5,10 19.5,11.5 15.5,13 14,17 12.5,13 8.5,11.5 12.5,10'/%3E%3C/g%3E%3Cg transform='translate(100%25,100%25) scale(-1,-1)'%3E%3Cpolygon points='14,6 15.5,10 19.5,11.5 15.5,13 14,17 12.5,13 8.5,11.5 12.5,10'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
   }
   .widget-top {
     display: flex; align-items: center; gap: 12px; margin-bottom: 22px;

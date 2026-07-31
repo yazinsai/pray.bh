@@ -7,6 +7,14 @@ ios/*.xcresult
 ios/**/xcuserdata/
 android/keystore/
 android/app/keystore.properties
+android/.idea/
+android/app/release/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+fastlane/*.json
+fastlane/*.p8
 *.jks
 *.p12
 *.keystore

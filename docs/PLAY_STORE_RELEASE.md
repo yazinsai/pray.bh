@@ -95,7 +95,7 @@ Deploy the privacy page before submission so the URL works.
 
 ### Version
 
-`0.1.0` (versionCode `1`)
+`0.1.0` (versionCode `4`)
 
 ## Package name registration (public key)
 
@@ -205,13 +205,65 @@ Confirm before upload:
 - Free
 - Availability: Bahrain first, or all countries
 
+## Android project folder
+
+Open this folder in Android Studio (not the repo root):
+
+```text
+android/
+```
+
+Full path on this machine:
+
+```text
+/Users/rock/ai/projects/pray.bh/android
+```
+
+File → Open → select `android/` (the directory that contains `settings.gradle` and `app/`).
+
+### JDK / Gradle / Android Studio (required)
+
+Your project uses **AGP 8.7.3** + Gradle **8.11.1**. That needs a **recent Android Studio** (2024.2+ / Koala or newer). Android Studio **2021.3 (Dolphin)** only supports up to AGP **7.3.1** and will refuse to sync this project.
+
+Upgrade Studio (Homebrew):
+
+```bash
+brew install --cask android-studio
+```
+
+Then open `android/` in the new Studio.
+
+AGP 8.7.3 also needs **JDK 17**:
+
+1. Settings → Build, Execution, Deployment → Build Tools → Gradle
+2. **Gradle JDK** → Add JDK… → select:
+
+```text
+/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+```
+
+(Must contain `bin/javac`. Do **not** pick `/opt/homebrew/opt/openjdk@17` or Android Studio’s old `Contents/jre` — those fail with “points to a JRE, not a JDK”.)
+3. Sync Project with Gradle Files
+
+Do **not** use JDK 8. That produces: `No matching variant of com.android.tools.build:gradle:8.7.3` / `compatible with Java 8`.
+
+CLI check (works without Studio):
+
+```bash
+cd android
+JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home ./gradlew :app:assembleDebug
+```
+
 ## Build upload
 
-1. Android Studio → Build → Generate Signed Bundle / APK → **Android App Bundle**
-2. Upload `.aab` to Play Console → Production (or Internal testing first)
-3. Fill Main store listing using assets + copy above
-4. Complete Data safety, Content rating, Ads, Target audience
-5. Submit for review
+1. Open `android/` in Android Studio (see above)
+2. Confirm Gradle JDK is 17, then let Gradle sync
+3. Build → Generate Signed Bundle / APK → **Android App Bundle**
+4. Use the upload keystore at `android/keystore/pray-bh-upload.p12` (credentials in `android/keystore/keystore.properties`)
+5. Upload `.aab` to Play Console → Production (or Internal testing first)
+6. Fill Main store listing using assets + copy above
+7. Complete Data safety, Content rating, Ads, Target audience
+8. Submit for review
 
 Internal testing first is recommended.
 

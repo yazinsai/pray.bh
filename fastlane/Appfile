@@ -1,0 +1,7 @@
+app_identifier("bh.pray.app")
+apple_id(ENV["APPLE_ID"] || "")
+itc_team_id(ENV["ASC_ITC_TEAM_ID"] || "")
+team_id(ENV["APPLE_TEAM_ID"] || "88M2R3XJZH")
+
+package_name("bh.pray.app")
+json_key_file(ENV["GOOGLE_PLAY_JSON_KEY"] || "fastlane/google-play-service-account.json")

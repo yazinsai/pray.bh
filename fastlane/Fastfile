@@ -1,0 +1,76 @@
+default_platform(:ios)
+
+IOS_IPA = "ios/build/export/pray.bh.ipa"
+ANDROID_AAB = "android/app/build/outputs/bundle/release/app-release.aab"
+ANDROID_JAVA_HOME = "/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+
+private_lane :asc_api_key do
+  UI.user_error!("Set ASC_KEY_ID") unless ENV["ASC_KEY_ID"]
+  UI.user_error!("Set ASC_ISSUER_ID") unless ENV["ASC_ISSUER_ID"]
+  UI.user_error!("Set ASC_KEY_PATH") unless ENV["ASC_KEY_PATH"]
+
+  app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_PATH"],
+    duration: 1200,
+    in_house: false
+  )
+end
+
+platform :ios do
+  desc "Build signed IPA and upload to TestFlight"
+  lane :beta do
+    sh("cd ios && xcodebuild -project PrayBH.xcodeproj -scheme PrayBH -configuration Release -sdk iphoneos -archivePath build/archives/PrayBH.xcarchive archive")
+    sh("cd ios && rm -rf build/export && xcodebuild -exportArchive -archivePath build/archives/PrayBH.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.app-store.plist")
+    api_key = asc_api_key
+    pilot(
+      api_key: api_key,
+      ipa: IOS_IPA,
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["RELEASE_NOTES"] || "Updated prayer-times widget design."
+    )
+  end
+
+  desc "Upload already-built IPA to TestFlight"
+  lane :upload do
+    api_key = asc_api_key
+    pilot(
+      api_key: api_key,
+      ipa: IOS_IPA,
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["RELEASE_NOTES"] || "Updated prayer-times widget design."
+    )
+  end
+end
+
+platform :android do
+  desc "Build signed AAB and upload to Play internal testing"
+  lane :internal do
+    sh("cd android && JAVA_HOME='#{ANDROID_JAVA_HOME}' ./gradlew :app:bundleRelease")
+    supply(
+      aab: ANDROID_AAB,
+      package_name: "bh.pray.app",
+      json_key: ENV["GOOGLE_PLAY_JSON_KEY"] || "fastlane/google-play-service-account.json",
+      track: ENV["PLAY_TRACK"] || "internal",
+      release_status: ENV["PLAY_RELEASE_STATUS"] || "completed",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Upload already-built AAB to Play internal testing"
+  lane :upload do
+    supply(
+      aab: ANDROID_AAB,
+      package_name: "bh.pray.app",
+      json_key: ENV["GOOGLE_PLAY_JSON_KEY"] || "fastlane/google-play-service-account.json",
+      track: ENV["PLAY_TRACK"] || "internal",
+      release_status: ENV["PLAY_RELEASE_STATUS"] || "completed",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

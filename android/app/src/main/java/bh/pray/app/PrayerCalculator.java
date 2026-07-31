@@ -105,6 +105,35 @@ public final class PrayerCalculator {
         return new SimpleDateFormat("EEEE, MMMM d", Locale.US).format(cal.getTime());
     }
 
+    public static String hijriDate(Calendar cal, boolean isArabic) {
+        try {
+            java.time.LocalDate localDate = java.time.LocalDate.of(
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.DAY_OF_MONTH)
+            );
+            java.time.chrono.HijrahDate hijrahDate = java.time.chrono.HijrahChronology.INSTANCE.date(localDate);
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(
+                "d MMMM yyyy",
+                new Locale(isArabic ? "ar" : "en")
+            );
+            String formatted = hijrahDate.format(formatter);
+            return isArabic ? arabicDigits(formatted) : formatted;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String arabicDigits(String value) {
+        char[] digits = {'٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'};
+        StringBuilder builder = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            builder.append(ch >= '0' && ch <= '9' ? digits[ch - '0'] : ch);
+        }
+        return builder.toString();
+    }
+
     private static int toMinutes(String time) {
         String[] parts = time.split(":");
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);

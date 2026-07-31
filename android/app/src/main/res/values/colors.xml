@@ -1,10 +1,13 @@
 <resources>
-    <color name="widget_background">#EDEDE9</color>
-    <color name="widget_panel">#F8F8F4</color>
-    <color name="widget_header_text">#555A58</color>
-    <color name="widget_brand_text">#626866</color>
-    <color name="widget_label_text">#666D69</color>
-    <color name="widget_time_text">#202422</color>
-    <color name="widget_chip_background">#4B4D4D</color>
+    <color name="widget_background">#00000000</color>
+    <color name="widget_panel">#FAF8F4</color>
+    <color name="widget_gold">#8F6A1C</color>
+    <color name="widget_gold_soft">#408F6A1C</color>
+    <color name="widget_header_text">#8F6A1C</color>
+    <color name="widget_brand_text">#8F6A1C</color>
+    <color name="widget_label_text">#4D5854</color>
+    <color name="widget_time_text">#141F1B</color>
+    <color name="widget_active_text">#028548</color>
+    <color name="widget_chip_background">#028548</color>
     <color name="widget_chip_text">#FFFFFF</color>
 </resources>

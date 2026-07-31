@@ -126,10 +126,30 @@ write_html() {
     margin-bottom: 36px; padding: 0 12px;
   }
   .widget {
+    position: relative;
     border-radius: 36px;
     background: rgba(255, 252, 246, 0.93);
     box-shadow: 0 18px 40px rgba(0,0,0,0.18);
     padding: 32px 34px 36px;
+    border: 1.25px solid rgba(200, 160, 64, 0.75);
+  }
+  .widget::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 0.75px solid rgba(200, 160, 64, 0.35);
+    border-radius: 32px;
+    pointer-events: none;
+  }
+  .widget::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 36px;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cg fill='%23C8A040' opacity='0.75'%3E%3Cpolygon points='12,5 13.5,9 17.5,10.5 13.5,12 12,16 10.5,12 6.5,10.5 10.5,9'/%3E%3Cg transform='translate(100%25,0) scale(-1,1)'%3E%3Cpolygon points='12,5 13.5,9 17.5,10.5 13.5,12 12,16 10.5,12 6.5,10.5 10.5,9'/%3E%3C/g%3E%3Cg transform='translate(0,100%25) scale(1,-1)'%3E%3Cpolygon points='12,5 13.5,9 17.5,10.5 13.5,12 12,16 10.5,12 6.5,10.5 10.5,9'/%3E%3C/g%3E%3Cg transform='translate(100%25,100%25) scale(-1,-1)'%3E%3Cpolygon points='12,5 13.5,9 17.5,10.5 13.5,12 12,16 10.5,12 6.5,10.5 10.5,9'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
   }
   .widget-top {
     display: flex; align-items: center; gap: 14px; margin-bottom: 26px;
