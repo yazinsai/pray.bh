@@ -15,6 +15,11 @@ android/app/build/
 android/local.properties
 fastlane/*.json
 fastlane/*.p8
+fastlane/.env
+fastlane/README.md
+fastlane/report.xml
+.env
+.env.local
 *.jks
 *.p12
 *.keystore

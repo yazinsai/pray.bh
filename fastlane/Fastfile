@@ -2,20 +2,31 @@ default_platform(:ios)
 
 IOS_IPA = "ios/build/export/pray.bh.ipa"
 ANDROID_AAB = "android/app/build/outputs/bundle/release/app-release.aab"
-ANDROID_JAVA_HOME = "/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 
 private_lane :asc_api_key do
-  UI.user_error!("Set ASC_KEY_ID") unless ENV["ASC_KEY_ID"]
-  UI.user_error!("Set ASC_ISSUER_ID") unless ENV["ASC_ISSUER_ID"]
-  UI.user_error!("Set ASC_KEY_PATH") unless ENV["ASC_KEY_PATH"]
+  key_id = ENV["ASC_KEY_ID"]
+  issuer_id = ENV["ASC_ISSUER_ID"]
+  key_filepath = ENV["ASC_KEY_PATH"]
+  key_content = ENV["ASC_KEY_CONTENT"]
 
-  app_store_connect_api_key(
-    key_id: ENV["ASC_KEY_ID"],
-    issuer_id: ENV["ASC_ISSUER_ID"],
-    key_filepath: ENV["ASC_KEY_PATH"],
+  UI.user_error!("Set ASC_KEY_ID environment variable") unless key_id && !key_id.empty?
+  UI.user_error!("Set ASC_ISSUER_ID environment variable") unless issuer_id && !issuer_id.empty?
+  UI.user_error!("Set ASC_KEY_PATH or ASC_KEY_CONTENT environment variable") unless (key_filepath && !key_filepath.empty?) || (key_content && !key_content.empty?)
+
+  params = {
+    key_id: key_id,
+    issuer_id: issuer_id,
     duration: 1200,
     in_house: false
-  )
+  }
+
+  if key_content && !key_content.empty?
+    params[:key_content] = key_content
+  else
+    params[:key_filepath] = key_filepath
+  end
+
+  app_store_connect_api_key(params)
 end
 
 platform :ios do
@@ -24,31 +35,49 @@ platform :ios do
     sh("cd ios && xcodebuild -project PrayBH.xcodeproj -scheme PrayBH -configuration Release -sdk iphoneos -archivePath build/archives/PrayBH.xcarchive archive")
     sh("cd ios && rm -rf build/export && xcodebuild -exportArchive -archivePath build/archives/PrayBH.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.app-store.plist")
     api_key = asc_api_key
-    pilot(
+    upload_to_testflight(
       api_key: api_key,
       ipa: IOS_IPA,
       skip_waiting_for_build_processing: true,
-      changelog: ENV["RELEASE_NOTES"] || "Updated prayer-times widget design."
+      changelog: ENV["RELEASE_NOTES"] || "Latest release update."
     )
   end
 
   desc "Upload already-built IPA to TestFlight"
   lane :upload do
     api_key = asc_api_key
-    pilot(
+    upload_to_testflight(
       api_key: api_key,
       ipa: IOS_IPA,
       skip_waiting_for_build_processing: true,
-      changelog: ENV["RELEASE_NOTES"] || "Updated prayer-times widget design."
+      changelog: ENV["RELEASE_NOTES"] || "Latest release update."
     )
+  end
+
+  desc "Verify App Store Connect connection"
+  lane :verify_asc do
+    api_key = asc_api_key
+    build_num = latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: "bh.pray.app"
+    )
+    UI.success("App Store Connect authentication successful! Latest TestFlight build number: #{build_num}")
   end
 end
 
 platform :android do
   desc "Build signed AAB and upload to Play internal testing"
   lane :internal do
-    sh("cd android && JAVA_HOME='#{ANDROID_JAVA_HOME}' ./gradlew :app:bundleRelease")
-    supply(
+    java_home = ENV["JAVA_HOME"]
+    if java_home.nil? || java_home.empty?
+      default_mac_jbr = "/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+      java_home = default_mac_jbr if File.directory?(default_mac_jbr)
+    end
+
+    env_prefix = java_home ? "JAVA_HOME='#{java_home}' " : ""
+    sh("cd android && #{env_prefix}./gradlew :app:bundleRelease")
+
+    upload_to_play_store(
       aab: ANDROID_AAB,
       package_name: "bh.pray.app",
       json_key: ENV["GOOGLE_PLAY_JSON_KEY"] || "fastlane/google-play-service-account.json",
@@ -62,7 +91,7 @@ platform :android do
 
   desc "Upload already-built AAB to Play internal testing"
   lane :upload do
-    supply(
+    upload_to_play_store(
       aab: ANDROID_AAB,
       package_name: "bh.pray.app",
       json_key: ENV["GOOGLE_PLAY_JSON_KEY"] || "fastlane/google-play-service-account.json",

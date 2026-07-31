@@ -2,62 +2,48 @@
 
 Use Fastlane for pray.bh native store releases. This repo is plain native iOS/Android, not Expo, so Fastlane is the cleanest tool. Expo EAS Submit can upload existing `.ipa`/`.aab` too, but it adds an Expo account/service layer without helping this project much.
 
-## One-time credentials
+## Credentials Setup
 
-### App Store Connect
+The Fastlane release credentials live in `fastlane/` (gitignored):
 
-Create an App Store Connect API key:
+- **App Store Connect Key**: `fastlane/AuthKey_CVJ23CD7P5.p8`
+  - Key ID: `CVJ23CD7P5`
+  - Apple ID: `apple@mrfwd.com`
+  - Team ID: `88M2R3XJZH`
+- **Google Play Service Account**: `fastlane/google-play-service-account.json`
+  - Service Account: `fastlane-supply@praybh.iam.gserviceaccount.com`
 
-1. App Store Connect → Users and Access → Integrations → App Store Connect API
-2. Create key with App Manager access
-3. Download `AuthKey_XXXX.p8`
-4. Save locally outside git, e.g. `~/Documents/apple/AuthKey_XXXX.p8`
-5. Export these in your shell profile or a local untracked file:
+Environment variables are configured in `fastlane/.env` (gitignored):
 
-```bash
-export ASC_KEY_ID="XXXX"
-export ASC_ISSUER_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-export ASC_KEY_PATH="$HOME/Documents/apple/AuthKey_XXXX.p8"
-export APPLE_ID="your-apple-id@example.com"
+```env
+ASC_KEY_ID="CVJ23CD7P5"
+ASC_ISSUER_ID="YOUR_ASC_ISSUER_ID"
+ASC_KEY_PATH="fastlane/AuthKey_CVJ23CD7P5.p8"
+APPLE_ID="apple@mrfwd.com"
+APPLE_TEAM_ID="88M2R3XJZH"
+
+GOOGLE_PLAY_JSON_KEY="fastlane/google-play-service-account.json"
+PLAY_TRACK="internal"
+PLAY_RELEASE_STATUS="completed"
 ```
 
-Never commit the `.p8`.
-
-### Google Play
-
-Create a Play Console service account:
-
-1. Play Console → Setup → API access
-2. Link a Google Cloud project if needed
-3. Create service account
-4. Grant access to app `bh.pray.app` with Release Manager permissions
-5. Download JSON key outside git, e.g. `~/Documents/google-play/pray-bh-play-service-account.json`
-6. Export:
-
-```bash
-export GOOGLE_PLAY_JSON_KEY="$HOME/Documents/google-play/pray-bh-play-service-account.json"
-export PLAY_TRACK="internal"
-```
-
-Never commit the JSON key.
+To complete the App Store Connect setup, ensure `ASC_ISSUER_ID` in `fastlane/.env` is set to your App Store Connect Issuer ID (found in App Store Connect -> Users and Access -> Integrations).
 
 ## Commands
 
-Build + upload both stores:
+Via npm scripts:
+
+```bash
+npm run release:ios      # Build & upload iOS to TestFlight
+npm run release:android  # Build & upload Android to Play internal testing
+npm run release:all      # Build & upload both
+```
+
+Via shell script:
 
 ```bash
 scripts/release-stores.sh all
-```
-
-Only iOS / TestFlight:
-
-```bash
 scripts/release-stores.sh ios
-```
-
-Only Android / Play internal testing:
-
-```bash
 scripts/release-stores.sh android
 ```
 
