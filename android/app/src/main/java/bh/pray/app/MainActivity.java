@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,7 +13,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
     private Handler timerHandler;
     private Runnable timerRunnable;
 
-    private TextView currentTimeView;
+    private TextView nextStatusView;
     private TextView gregorianDateView;
     private TextView hijriDateView;
     private LinearLayout prayerListContainer;
@@ -74,23 +74,23 @@ public class MainActivity extends Activity {
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(20), dp(12), dp(20), dp(32));
+        root.setPadding(dp(24), dp(16), dp(24), dp(32));
         root.setBackgroundColor(getColor(R.color.app_background));
         root.setOnApplyWindowInsetsListener((view, insets) -> {
             view.setPadding(
-                dp(20),
-                insets.getSystemWindowInsetTop() + dp(12),
-                dp(20),
+                dp(24),
+                insets.getSystemWindowInsetTop() + dp(16),
+                dp(24),
                 insets.getSystemWindowInsetBottom() + dp(32)
             );
             return insets;
         });
 
-        // --- HeaderView ---
+        // --- Compact Header Block ---
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.VERTICAL);
 
-        // Top Row: "pray.bh" on left, current time on right
+        // Top Row: "pray.bh" on left, Next Prayer Status Badge on right
         RelativeLayout topRow = new RelativeLayout(this);
 
         TextView brandTitle = new TextView(this);
@@ -107,51 +107,58 @@ public class MainActivity extends Activity {
         brandParams.addRule(RelativeLayout.CENTER_VERTICAL);
         topRow.addView(brandTitle, brandParams);
 
-        currentTimeView = new TextView(this);
-        currentTimeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        currentTimeView.setTextColor(getColor(R.color.text_secondary));
-        currentTimeView.setTypeface(Typeface.MONOSPACE);
-        currentTimeView.setFontFeatureSettings("tnum");
+        // Status Badge: "Next: Dhuhr in 4h 18m" (Replaces duplicate device time)
+        nextStatusView = new TextView(this);
+        nextStatusView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        nextStatusView.setTextColor(getColor(R.color.brand_accent));
+        nextStatusView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        nextStatusView.setPadding(dp(10), dp(4), dp(10), dp(4));
 
-        RelativeLayout.LayoutParams timeParams = new RelativeLayout.LayoutParams(
+        GradientDrawable statusBg = new GradientDrawable();
+        statusBg.setColor(getColor(R.color.hero_bg));
+        statusBg.setCornerRadius(dp(12));
+        statusBg.setStroke(dp(1), getColor(R.color.hero_border));
+        nextStatusView.setBackground(statusBg);
+
+        RelativeLayout.LayoutParams statusParams = new RelativeLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        timeParams.addRule(RelativeLayout.ALIGN_PARENT_END);
-        timeParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        topRow.addView(currentTimeView, timeParams);
+        statusParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+        statusParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        topRow.addView(nextStatusView, statusParams);
 
         header.addView(topRow, matchWrap());
 
-        // Bottom Row: "Friday, July 31 · 16 Safar 1448 AH"
+        // Date Line: "Friday, July 31 · 16 Safar 1448 AH" (Compact, smaller, lower contrast)
         LinearLayout dateRow = new LinearLayout(this);
         dateRow.setOrientation(LinearLayout.HORIZONTAL);
         dateRow.setGravity(Gravity.CENTER_VERTICAL);
 
         LinearLayout.LayoutParams dateRowParams = matchWrap();
-        dateRowParams.topMargin = dp(8);
+        dateRowParams.topMargin = dp(4);
         dateRow.setLayoutParams(dateRowParams);
 
         gregorianDateView = new TextView(this);
-        gregorianDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        gregorianDateView.setTextColor(getColor(R.color.text_secondary));
+        gregorianDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        gregorianDateView.setTextColor(getColor(R.color.text_tertiary));
         dateRow.addView(gregorianDateView);
 
         TextView dot = new TextView(this);
         dot.setText(" · ");
-        dot.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        dot.setTextColor(getColor(R.color.text_secondary));
+        dot.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        dot.setTextColor(getColor(R.color.text_tertiary));
         dateRow.addView(dot);
 
         hijriDateView = new TextView(this);
-        hijriDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        hijriDateView.setTextColor(getColor(R.color.text_secondary));
+        hijriDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        hijriDateView.setTextColor(getColor(R.color.text_tertiary));
         dateRow.addView(hijriDateView);
 
         header.addView(dateRow);
 
         LinearLayout.LayoutParams headerParams = matchWrap();
-        headerParams.bottomMargin = dp(28);
+        headerParams.bottomMargin = dp(16); // Reduced gap before Fajr
         header.setLayoutParams(headerParams);
 
         root.addView(header);
@@ -173,14 +180,19 @@ public class MainActivity extends Activity {
     private void updateUI() {
         data = PrayerCalculator.today();
 
-        if (currentTimeView != null) {
-            currentTimeView.setText(PrayerCalculator.currentTimeString(data.now));
-        }
-        if (gregorianDateView != null) {
-            gregorianDateView.setText(PrayerCalculator.gregorianDateHeader(data.now));
-        }
-        if (hijriDateView != null) {
-            hijriDateView.setText(PrayerCalculator.hijriDateString(data.now));
+        if (data != null) {
+            int minutesUntilNext = PrayerCalculator.minutesUntil(data.times, data.nextKey, data.now);
+            if (nextStatusView != null) {
+                String nextLabel = PrayerCalculator.label(data.nextKey);
+                String countdownStr = PrayerCalculator.timeUntilText(minutesUntilNext);
+                nextStatusView.setText("Next: " + nextLabel + " " + countdownStr);
+            }
+            if (gregorianDateView != null) {
+                gregorianDateView.setText(PrayerCalculator.gregorianDateHeader(data.now));
+            }
+            if (hijriDateView != null) {
+                hijriDateView.setText(PrayerCalculator.hijriDateString(data.now));
+            }
         }
 
         renderPrayerList();
@@ -193,8 +205,13 @@ public class MainActivity extends Activity {
         String[] keys = new String[]{"fajr", "shurooq", "dhuhr", "asr", "maghrib", "isha"};
         int primaryColor = getColor(R.color.text_primary);
         int secondaryColor = getColor(R.color.text_secondary);
+        int tertiaryColor = getColor(R.color.text_tertiary);
         int accentColor = getColor(R.color.brand_accent);
         int dividerColor = getColor(R.color.divider_color);
+        int heroBgColor = getColor(R.color.hero_bg);
+        int heroBorderColor = getColor(R.color.hero_border);
+        int heroAccentBarColor = getColor(R.color.hero_accent_bar);
+        int heroCountdownColor = getColor(R.color.hero_countdown);
 
         int minutesUntilNext = PrayerCalculator.minutesUntil(data.times, data.nextKey, data.now);
 
@@ -204,52 +221,75 @@ public class MainActivity extends Activity {
             boolean isNext = key.equals(data.nextKey);
             boolean isPast = PrayerCalculator.isPast(key, time24, data.nextKey, data.now);
 
-            // PrayerRow (Horizontal Layout)
+            // Row Container
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(0, dp(14), 0, dp(14));
+            row.setPadding(dp(12), dp(12), dp(14), dp(12));
 
-            // 1. Icon (Width 20dp, Size 20dp, margin end 12dp)
+            // Hero state background for next prayer
+            if (isNext) {
+                GradientDrawable heroCard = new GradientDrawable();
+                heroCard.setColor(heroBgColor);
+                heroCard.setCornerRadius(dp(12));
+                heroCard.setStroke(dp(1), heroBorderColor);
+                row.setBackground(heroCard);
+            }
+
+            // Slim accent bar on left (4dp width across all rows to preserve 3-column grid alignment)
+            View accentBar = new View(this);
+            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(dp(4), dp(24));
+            barParams.setMarginEnd(dp(10));
+            if (isNext) {
+                GradientDrawable barDrawable = new GradientDrawable();
+                barDrawable.setColor(heroAccentBarColor);
+                barDrawable.setCornerRadius(dp(2));
+                accentBar.setBackground(barDrawable);
+            } else {
+                accentBar.setBackgroundColor(0);
+            }
+            row.addView(accentBar, barParams);
+
+            // Column 1: Icon (20dp x 20dp, standardized optical weight)
             ImageView icon = new ImageView(this);
             int drawableId = getIconDrawableRes(key);
             icon.setImageResource(drawableId);
-            icon.setImageTintList(ColorStateList.valueOf(isNext ? accentColor : secondaryColor));
+            icon.setImageTintList(ColorStateList.valueOf(isNext ? accentColor : (isPast ? tertiaryColor : secondaryColor)));
 
             LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dp(20), dp(20));
             iconParams.setMarginEnd(dp(12));
             row.addView(icon, iconParams);
 
-            // 2. Middle Names (VStack: English Name + Arabic Name)
+            // Column 2: Prayer Name (VStack: English Name + Arabic Name directly beneath)
             LinearLayout namesLayout = new LinearLayout(this);
             namesLayout.setOrientation(LinearLayout.VERTICAL);
 
             TextView nameEn = new TextView(this);
             nameEn.setText(PrayerCalculator.label(key));
-            nameEn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-            nameEn.setTextColor(primaryColor);
+            nameEn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            nameEn.setTextColor(isNext ? primaryColor : (isPast ? secondaryColor : primaryColor));
             nameEn.setTypeface(Typeface.DEFAULT, isNext ? Typeface.BOLD : Typeface.NORMAL);
             namesLayout.addView(nameEn);
 
             TextView nameAr = new TextView(this);
             nameAr.setText(PrayerCalculator.arabicLabel(key));
             nameAr.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            nameAr.setTextColor(secondaryColor);
+            nameAr.setTextColor(isNext ? accentColor : secondaryColor);
             LinearLayout.LayoutParams arParams = matchWrap();
-            arParams.topMargin = dp(1);
+            arParams.topMargin = dp(2);
             namesLayout.addView(nameAr, arParams);
 
             LinearLayout.LayoutParams namesParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             row.addView(namesLayout, namesParams);
 
-            // 3. Right Time & Countdown (VStack: Time + Countdown if next)
+            // Column 3: Time & Countdown (VStack: Right-aligned Display Time + Countdown directly beneath if hero)
             LinearLayout timeLayout = new LinearLayout(this);
             timeLayout.setOrientation(LinearLayout.VERTICAL);
             timeLayout.setGravity(Gravity.END);
 
             TextView timeView = new TextView(this);
             timeView.setText(PrayerCalculator.formatDisplayTime(time24));
-            timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+            timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, isNext ? 19 : 16); // Hero time is larger
             timeView.setTextColor(isNext ? accentColor : primaryColor);
             timeView.setTypeface(Typeface.MONOSPACE, isNext ? Typeface.BOLD : Typeface.NORMAL);
             timeView.setFontFeatureSettings("tnum");
@@ -259,25 +299,34 @@ public class MainActivity extends Activity {
                 TextView countdownView = new TextView(this);
                 countdownView.setText(PrayerCalculator.timeUntilText(minutesUntilNext));
                 countdownView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                countdownView.setTextColor(secondaryColor);
+                countdownView.setTextColor(heroCountdownColor);
+                countdownView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                 LinearLayout.LayoutParams countdownParams = matchWrap();
-                countdownParams.topMargin = dp(1);
+                countdownParams.topMargin = dp(2);
                 timeLayout.addView(countdownView, countdownParams);
             }
 
             row.addView(timeLayout, wrapWrap());
 
-            // Set past opacity
-            row.setAlpha(isPast ? 0.38f : 1.0f);
+            // Set past row opacity
+            row.setAlpha(isPast ? 0.42f : 1.0f);
 
             prayerListContainer.addView(row, matchWrap());
 
-            // Divider between rows
+            // Inset, lighter divider between non-hero rows
             if (i < keys.length - 1) {
-                View divider = new View(this);
-                divider.setBackgroundColor(dividerColor);
-                divider.setAlpha(isPast ? 0.38f : 1.0f);
-                prayerListContainer.addView(divider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
+                boolean nextIsHero = keys[i + 1].equals(data.nextKey);
+                if (!isNext && !nextIsHero) {
+                    View divider = new View(this);
+                    divider.setBackgroundColor(dividerColor);
+                    divider.setAlpha(isPast ? 0.38f : 1.0f);
+                    LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1));
+                    dividerParams.setMarginStart(dp(50)); // Inset past accent bar + icon
+                    dividerParams.setMarginEnd(dp(12));
+                    dividerParams.topMargin = dp(2);
+                    dividerParams.bottomMargin = dp(2);
+                    prayerListContainer.addView(divider, dividerParams);
+                }
             }
         }
     }

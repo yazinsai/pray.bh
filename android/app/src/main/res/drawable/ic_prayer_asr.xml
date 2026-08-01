@@ -6,18 +6,18 @@
     <!-- Sun disc -->
     <path
         android:fillColor="#FF000000"
-        android:pathData="M12,8.5 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
-    <!-- Rays above/diagonal -->
+        android:pathData="M12,9 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+    <!-- Upper rays -->
     <path
         android:fillColor="#00000000"
-        android:pathData="M12,2 L12,3.5 M5.64,5.64 L6.7,6.7 M18.36,5.64 L17.3,6.7"
+        android:pathData="M12,2.5 L12,4 M5.64,5.64 L7.05,7.05 M18.36,5.64 L16.95,7.05"
         android:strokeColor="#FF000000"
-        android:strokeWidth="1.8"
+        android:strokeWidth="2"
         android:strokeLineCap="round" />
-    <!-- Haze horizontal lines -->
+    <!-- Afternoon shadow lines -->
     <path
         android:fillColor="#00000000"
-        android:pathData="M3,16 L21,16 M5,19 L19,19"
+        android:pathData="M3,17 L21,17 M6,20 L18,20"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round" />

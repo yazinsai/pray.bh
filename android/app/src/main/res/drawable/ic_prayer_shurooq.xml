@@ -3,14 +3,21 @@
     android:height="20dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Center sun disc -->
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="M12,12 m-4.5,0 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0" />
-    <!-- Sun rays -->
+    <!-- Horizon line -->
     <path
         android:fillColor="#00000000"
-        android:pathData="M12,2 L12,4.5 M12,19.5 L12,22 M2,12 L4.5,12 M19.5,12 L22,12 M4.93,4.93 L6.7,6.7 M17.3,17.3 L19.07,19.07 M4.93,19.07 L6.7,17.3 M17.3,6.7 L19.07,4.93"
+        android:pathData="M2,18 L22,18"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    <!-- Sun disc sitting on horizon -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,13 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+    <!-- Upward rising rays -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M12,3 L12,5.5 M6.34,8.64 L8.11,10.41 M17.66,8.64 L15.89,10.41"
         android:strokeColor="#FF000000"
         android:strokeWidth="2"
         android:strokeLineCap="round" />

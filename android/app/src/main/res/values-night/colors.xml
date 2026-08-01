@@ -1,9 +1,15 @@
 <resources>
-    <color name="brand_accent">#2E7561</color>
-    <color name="app_background">#1C1C1E</color>
+    <color name="brand_accent">#3DA387</color>
+    <color name="app_background">#121214</color>
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#8E8E93</color>
-    <color name="divider_color">#2C2C2E</color>
+    <color name="text_secondary">#9A9A9E</color>
+    <color name="text_tertiary">#6C6C70</color>
+    <color name="divider_color">#222226</color>
+
+    <color name="hero_bg">#262E7561</color>
+    <color name="hero_border">#403DA387</color>
+    <color name="hero_accent_bar">#3DA387</color>
+    <color name="hero_countdown">#52C4A7</color>
 
     <color name="widget_background">#00000000</color>
     <color name="widget_panel">#F5070605</color>
