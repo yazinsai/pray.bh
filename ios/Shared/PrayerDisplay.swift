@@ -2,13 +2,13 @@ import Foundation
 
 func iconName(for key: String) -> String {
     switch key {
-    case "fajr": return "sunrise.fill"
-    case "shurooq": return "sun.max.fill"
+    case "fajr": return "sunrise"
+    case "shurooq": return "sun.and.horizon"
     case "dhuhr": return "sun.max"
-    case "asr": return "sun.haze.fill"
-    case "maghrib": return "sunset.fill"
-    case "isha": return "moon.stars.fill"
-    default: return "clock.fill"
+    case "asr": return "sun.haze"
+    case "maghrib": return "sunset"
+    case "isha": return "moon"
+    default: return "clock"
     }
 }
 

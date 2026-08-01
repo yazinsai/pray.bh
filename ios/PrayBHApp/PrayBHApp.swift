@@ -124,9 +124,10 @@ struct PrayerRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconName(for: prayer.key))
-                .font(.system(size: 15, weight: .medium))
+                .font(.system(size: 16, weight: .regular))
+                .symbolRenderingMode(.monochrome)
                 .foregroundStyle(isNext ? Brand.accent : Color(.secondaryLabel))
-                .frame(width: 20)
+                .frame(width: 20, height: 20)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(prayer.nameEn)

@@ -76,8 +76,10 @@ struct SmallPrayerWidget: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 5) {
                     Image(systemName: iconName(for: entry.response.nextPrayer.key))
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .medium))
+                        .symbolRenderingMode(.monochrome)
                         .foregroundStyle(Brand.accent)
+                        .frame(width: 14, height: 14)
                     Text("Next")
                         .font(.caption2.weight(.bold))
                         .textCase(.uppercase)
@@ -140,12 +142,6 @@ struct MediumPrayerWidget: View {
                         countdownText: isNext ? widgetTimeUntilText(entry.response.minutesUntilNextPrayer) : nil
                     )
                     .frame(maxWidth: .infinity)
-
-                    if index < rowPrayers.count - 1 {
-                        Rectangle()
-                            .fill(Color(.separator))
-                            .frame(width: 0.5, height: 46)
-                    }
                 }
             }
             .padding(.horizontal, 6)
@@ -168,8 +164,10 @@ struct PrayerTimeColumn: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: iconName(for: prayer.key))
-                .font(.system(size: 19, weight: .semibold))
+                .font(.system(size: 17, weight: .regular))
+                .symbolRenderingMode(.monochrome)
                 .foregroundStyle(isNext ? Brand.accent : Color(.secondaryLabel))
+                .frame(width: 22, height: 20)
 
             Text(shortName(prayer, isArabic: isArabic))
                 .font(.system(size: isArabic ? 14 : 13, weight: isNext ? .semibold : .medium, design: .rounded))
