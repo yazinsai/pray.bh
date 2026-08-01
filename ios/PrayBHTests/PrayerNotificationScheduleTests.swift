@@ -85,9 +85,49 @@ final class PrayerNotificationScheduleTests: XCTestCase {
         XCTAssertEqual(bahrainString(occurrence.fireDate), "2026-08-01 22:38")
     }
 
+    func testOffsetLongerThanRollingHorizonStillSchedulesFutureNotifications() throws {
+        let preferences = enabledPreferences(.fajr)
+        preferences.setOffsetMinutes((13 * 24 * 60) + 300, for: .fajr)
+        let start = try bahrainDate("2026-08-01 12:00")
+        let horizonEnd = try bahrainDate("2026-08-13 00:00")
+
+        let occurrences = PrayerNotificationSchedule.occurrences(
+            startingAt: start,
+            preferences: preferences.snapshot()
+        )
+
+        XCTAssertEqual(occurrences.count, 12)
+        XCTAssertEqual(
+            bahrainString(try XCTUnwrap(occurrences.first?.prayerDate)),
+            "2026-08-15 03:47"
+        )
+        XCTAssertEqual(
+            bahrainString(try XCTUnwrap(occurrences.first?.fireDate)),
+            "2026-08-01 22:47"
+        )
+        XCTAssertTrue(occurrences.allSatisfy { $0.fireDate > start })
+        XCTAssertTrue(
+            occurrences.allSatisfy { $0.fireDate < horizonEnd }
+        )
+    }
+
+    func testUnrepresentableOffsetFailsSafely() throws {
+        let preferences = enabledPreferences(.fajr)
+        preferences.setOffsetMinutes(Int.max, for: .fajr)
+
+        XCTAssertEqual(
+            PrayerNotificationSchedule.occurrences(
+                startingAt: try bahrainDate("2026-08-01 12:00"),
+                preferences: preferences.snapshot()
+            ),
+            []
+        )
+    }
+
     func testPastOccurrencesAreDiscarded() throws {
         let preferences = enabledPreferences(.fajr, .dhuhr, .asr)
         let start = try bahrainDate("2026-08-01 12:00")
+        let horizonEnd = try bahrainDate("2026-08-02 00:00")
 
         let occurrences = PrayerNotificationSchedule.occurrences(
             startingAt: start,
@@ -97,6 +137,36 @@ final class PrayerNotificationScheduleTests: XCTestCase {
 
         XCTAssertEqual(occurrences.map(\.prayer), [.asr])
         XCTAssertTrue(occurrences.allSatisfy { $0.fireDate > start })
+        XCTAssertTrue(occurrences.allSatisfy { $0.fireDate < horizonEnd })
+    }
+
+    func testFireDateExactlyAtHorizonEndIsExcluded() throws {
+        let preferences = enabledPreferences(.fajr)
+        let start = try bahrainDate("2026-08-01 00:00")
+
+        // 2026-08-02 Fajr is 03:38. A 218-minute offset fires exactly
+        // at the exclusive one-day horizon end: 2026-08-02 00:00.
+        preferences.setOffsetMinutes(218, for: .fajr)
+        XCTAssertEqual(
+            PrayerNotificationSchedule.occurrences(
+                startingAt: start,
+                days: 1,
+                preferences: preferences.snapshot()
+            ),
+            []
+        )
+
+        preferences.setOffsetMinutes(219, for: .fajr)
+        let included = PrayerNotificationSchedule.occurrences(
+            startingAt: start,
+            days: 1,
+            preferences: preferences.snapshot()
+        )
+        XCTAssertEqual(included.count, 1)
+        XCTAssertEqual(
+            bahrainString(try XCTUnwrap(included.first?.fireDate)),
+            "2026-08-01 23:59"
+        )
     }
 
     func testIdentifiersAreStableUniqueAndAppOwned() throws {
@@ -213,13 +283,32 @@ final class PrayerNotificationSettingsModelTests: XCTestCase {
             manager: manager
         )
 
-        await model.enableAllFromOnboarding()
+        let route = await model.enableAllFromOnboarding()
 
         XCTAssertTrue(model.isOnboardingComplete)
         XCTAssertTrue(NotificationPrayer.all.allSatisfy(model.isEnabled))
         XCTAssertTrue(NotificationPrayer.all.allSatisfy { model.offsetMinutes(for: $0) == 0 })
+        XCTAssertEqual(route, .home)
         XCTAssertEqual(manager.requestCount, 1)
         XCTAssertEqual(manager.reconcileCount, 1)
+    }
+
+    func testDeniedEnableAllOnboardingRoutesToSettingsAndRetainsSelections() async {
+        let preferences = PrayerNotificationPreferences(defaults: defaults)
+        let manager = FakePrayerNotificationManager()
+        manager.statusAfterRequest = .denied
+        let model = PrayerNotificationSettingsModel(
+            preferences: preferences,
+            manager: manager
+        )
+
+        let route = await model.enableAllFromOnboarding()
+
+        XCTAssertEqual(route, .settings)
+        XCTAssertTrue(model.isPermissionDenied)
+        XCTAssertTrue(NotificationPrayer.all.allSatisfy(model.isEnabled))
+        XCTAssertTrue(NotificationPrayer.all.allSatisfy(preferences.isEnabled))
+        XCTAssertTrue(model.isOnboardingComplete)
     }
 
     func testCustomizeCompletesOnboardingWithoutRequestingPermission() {
@@ -246,7 +335,7 @@ final class PrayerNotificationSettingsModelTests: XCTestCase {
             manager: manager
         )
 
-        model.completeOnboardingWithoutNotifications()
+        _ = model.completeOnboardingWithoutNotifications()
 
         XCTAssertTrue(model.isOnboardingComplete)
         XCTAssertTrue(NotificationPrayer.all.allSatisfy { !model.isEnabled($0) })
@@ -269,22 +358,40 @@ final class PrayerNotificationSettingsModelTests: XCTestCase {
         XCTAssertEqual(manager.requestCount, 0)
         XCTAssertEqual(manager.reconcileCount, 1)
     }
+
+    func testRootSettingsActivationRefreshesAuthorizationAndReconciles() async {
+        let manager = FakePrayerNotificationManager()
+        manager.status = .authorized
+        let model = PrayerNotificationSettingsModel(
+            preferences: PrayerNotificationPreferences(defaults: defaults),
+            manager: manager
+        )
+
+        await model.handleSettingsSceneBecameActive()
+
+        XCTAssertEqual(model.authorizationStatus, .authorized)
+        XCTAssertEqual(manager.authorizationStatusCount, 1)
+        XCTAssertEqual(manager.reconcileCount, 1)
+    }
 }
 
 @MainActor
 private final class FakePrayerNotificationManager: PrayerNotificationManaging {
     var status: UNAuthorizationStatus = .notDetermined
+    var statusAfterRequest: UNAuthorizationStatus = .authorized
+    var authorizationStatusCount = 0
     var requestCount = 0
     var reconcileCount = 0
 
     func authorizationStatus() async -> UNAuthorizationStatus {
-        status
+        authorizationStatusCount += 1
+        return status
     }
 
     func requestAuthorization() async -> Bool {
         requestCount += 1
-        status = .authorized
-        return true
+        status = statusAfterRequest
+        return status == .authorized
     }
 
     func reconcile() async {

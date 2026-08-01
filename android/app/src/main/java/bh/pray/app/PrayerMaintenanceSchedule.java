@@ -14,6 +14,17 @@ public final class PrayerMaintenanceSchedule {
 
     private PrayerMaintenanceSchedule() {}
 
+    public static boolean isNeeded(
+        PrayerNotificationSchedule.PreferenceSource preferences
+    ) {
+        for (String prayer : PrayerNotificationPreferences.PRAYER_KEYS) {
+            if (preferences.isEnabled(prayer)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static long nextTriggerMillis(long nowMillis) {
         Calendar trigger = Calendar.getInstance(BAHRAIN, Locale.US);
         trigger.setTimeInMillis(nowMillis);

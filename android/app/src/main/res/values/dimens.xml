@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fixed dp slots keep widget height stable; autosize fills them. -->
+    <dimen name="widget_name_height">17dp</dimen>
+    <dimen name="widget_time_height">26dp</dimen>
+    <dimen name="widget_marker_height">10dp</dimen>
+
+    <dimen name="widget_name_text_max">14sp</dimen>
+    <dimen name="widget_name_text_min">8sp</dimen>
+    <dimen name="widget_time_text_max">20sp</dimen>
+    <dimen name="widget_time_text_min">11sp</dimen>
+    <dimen name="widget_marker_text">8sp</dimen>
+    <dimen name="widget_header_text">11sp</dimen>
+</resources>

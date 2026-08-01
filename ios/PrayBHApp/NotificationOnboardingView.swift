@@ -2,8 +2,7 @@ import SwiftUI
 
 struct NotificationOnboardingView: View {
     @ObservedObject var model: PrayerNotificationSettingsModel
-    let onCustomize: () -> Void
-    @Environment(\.dismiss) private var dismiss
+    let onComplete: (NotificationOnboardingRoute) -> Void
     @State private var isEnabling = false
 
     var body: some View {
@@ -33,9 +32,9 @@ struct NotificationOnboardingView: View {
                 Button {
                     isEnabling = true
                     Task {
-                        await model.enableAllFromOnboarding()
+                        let route = await model.enableAllFromOnboarding()
                         isEnabling = false
-                        dismiss()
+                        onComplete(route)
                     }
                 } label: {
                     HStack {
@@ -55,10 +54,7 @@ struct NotificationOnboardingView: View {
 
                 Button("Customize") {
                     let route = model.completeOnboardingForCustomization()
-                    dismiss()
-                    if route == .settings {
-                        onCustomize()
-                    }
+                    onComplete(route)
                 }
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity)
@@ -68,8 +64,8 @@ struct NotificationOnboardingView: View {
                 .disabled(isEnabling)
 
                 Button("Not now") {
-                    model.completeOnboardingWithoutNotifications()
-                    dismiss()
+                    let route = model.completeOnboardingWithoutNotifications()
+                    onComplete(route)
                 }
                 .foregroundStyle(Color(.secondaryLabel))
                 .frame(height: 44)

@@ -22,9 +22,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
+    private static final int NOTIFICATION_ONBOARDING_REQUEST = 4301;
     private PrayerCalculator.PrayerData data;
     private Handler timerHandler;
     private Runnable timerRunnable;
+    private boolean homeInitialized;
+    private boolean notificationOnboardingLaunched;
 
     private TextView nextStatusView;
     private TextView gregorianDateView;
@@ -47,29 +50,60 @@ public class MainActivity extends Activity {
 
         OnboardingCompletionStore onboardingStore = new OnboardingCompletionStore(this);
         if (!onboardingStore.isComplete()) {
-            setContentView(new OnboardingView(this, onboardingStore, this::showPrayerHome));
+            setContentView(new OnboardingView(
+                this,
+                onboardingStore,
+                this::continueToNotificationOnboarding
+            ));
         } else {
-            showPrayerHome();
+            continueToNotificationOnboarding();
         }
     }
 
-    private void showPrayerHome() {
+    private void continueToNotificationOnboarding() {
+        PrayerNotificationPreferences preferences =
+            new PrayerNotificationPreferences(this);
+        if (!preferences.isOnboardingComplete()) {
+            if (!notificationOnboardingLaunched) {
+                notificationOnboardingLaunched = true;
+                startActivityForResult(
+                    new Intent(this, NotificationOnboardingActivity.class),
+                    NOTIFICATION_ONBOARDING_REQUEST
+                );
+            }
+            return;
+        }
+        initializePrayerHome();
+    }
+
+    private void initializePrayerHome() {
+        if (homeInitialized) {
+            return;
+        }
+        homeInitialized = true;
         setupUI();
         updateUI();
         if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
             timerHandler.postDelayed(timerRunnable, 1000);
         }
-        PrayerNotificationPreferences notificationPreferences =
-            new PrayerNotificationPreferences(this);
-        if (!notificationPreferences.isOnboardingComplete()) {
-            startActivity(new Intent(this, NotificationOnboardingActivity.class));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NOTIFICATION_ONBOARDING_REQUEST) {
+            notificationOnboardingLaunched = false;
+            continueToNotificationOnboarding();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (!homeInitialized) {
+            return;
+        }
         updateUI();
         PrayerNotificationManager.reconcile(this);
         if (timerHandler != null && timerRunnable != null) {

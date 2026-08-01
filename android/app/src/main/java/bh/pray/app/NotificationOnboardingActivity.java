@@ -43,8 +43,8 @@ public final class NotificationOnboardingActivity extends Activity {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_PERMISSION_REQUEST) {
-            PrayerNotificationManager.reconcile(this);
-            finish();
+            preferences.markOnboardingComplete();
+            finishAfterPermissionDecision();
         }
     }
 
@@ -111,9 +111,10 @@ public final class NotificationOnboardingActivity extends Activity {
     }
 
     private void enableAll() {
-        preferences.applyOnboardingAction(
-            PrayerNotificationPreferences.OnboardingAction.ENABLE_ALL
-        );
+        for (String prayer : PrayerNotificationPreferences.PRAYER_KEYS) {
+            preferences.setOffsetMinutes(prayer, 0);
+            preferences.setEnabled(prayer, true);
+        }
         if (Build.VERSION.SDK_INT >= 33 &&
             !PrayerNotificationManager.hasNotificationPermission(this) &&
             !preferences.wasPermissionRequested()) {
@@ -124,7 +125,15 @@ public final class NotificationOnboardingActivity extends Activity {
             );
             return;
         }
+        preferences.markOnboardingComplete();
+        finishAfterPermissionDecision();
+    }
+
+    private void finishAfterPermissionDecision() {
         PrayerNotificationManager.reconcile(this);
+        if (!PrayerNotificationManager.hasNotificationPermission(this)) {
+            startActivity(new Intent(this, NotificationSettingsActivity.class));
+        }
         finish();
     }
 

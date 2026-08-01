@@ -105,6 +105,46 @@ public class PrayerNotificationScheduleTest {
     }
 
     @Test
+    public void offsetBeyondTwelveDaysStillFillsNextTwelveDayFireWindow() {
+        MemoryPreferences preferences = new MemoryPreferences("fajr");
+        preferences.offsets.put("fajr", 20 * 24 * 60);
+        Calendar now = at("2026-08-01 00:00");
+
+        List<PrayerNotificationSchedule.Occurrence> occurrences =
+            PrayerNotificationSchedule.generate(now, 12, preferences);
+
+        assertEquals(12, occurrences.size());
+        assertEquals("2026-08-21 03:51", format(occurrences.get(0).prayerDateMillis));
+        assertEquals("2026-08-01 03:51", format(occurrences.get(0).fireMillis));
+        assertEquals("2026-08-12", format(occurrences.get(11).fireMillis).substring(0, 10));
+    }
+
+    @Test
+    public void maximumOffsetUsesBoundedCandidateWindowWithoutOverflow() {
+        MemoryPreferences preferences = new MemoryPreferences("isha");
+        preferences.offsets.put("isha", Integer.MAX_VALUE);
+        Calendar now = at("2026-08-01 00:00");
+        long horizonEnd = at("2026-08-13 00:00").getTimeInMillis();
+
+        List<PrayerNotificationSchedule.Occurrence> occurrences =
+            PrayerNotificationSchedule.generate(now, 12, preferences);
+
+        assertEquals(12, occurrences.size());
+        assertTrue(occurrences.stream().allMatch(item ->
+            item.fireMillis > now.getTimeInMillis() &&
+                item.fireMillis < horizonEnd
+        ));
+    }
+
+    @Test
+    public void notificationAvailabilityIncludesChannelImportance() {
+        assertTrue(PrayerNotificationAvailability.isEnabled(true, true, 3));
+        assertFalse(PrayerNotificationAvailability.isEnabled(false, true, 3));
+        assertFalse(PrayerNotificationAvailability.isEnabled(true, false, 3));
+        assertFalse(PrayerNotificationAvailability.isEnabled(true, true, 0));
+    }
+
+    @Test
     public void pastOccurrencesAreDiscarded() {
         MemoryPreferences preferences = new MemoryPreferences("fajr", "dhuhr", "asr");
         Calendar now = at("2026-08-01 12:00");
@@ -179,6 +219,16 @@ public class PrayerNotificationScheduleTest {
             PrayerMaintenanceSchedule.ACTION
         );
         assertEquals(0x50524159, PrayerMaintenanceSchedule.REQUEST_CODE);
+    }
+
+    @Test
+    public void maintenanceAlarmIsNeededOnlyWhenAtLeastOnePrayerIsEnabled() {
+        assertFalse(
+            PrayerMaintenanceSchedule.isNeeded(new MemoryPreferences())
+        );
+        assertTrue(
+            PrayerMaintenanceSchedule.isNeeded(new MemoryPreferences("isha"))
+        );
     }
 
     private static Calendar at(String value) {

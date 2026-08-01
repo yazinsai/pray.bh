@@ -2,43 +2,49 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/isha_marker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_marker_height"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:text="▾"
+        android:maxLines="1"
+        android:text="●"
         android:textColor="@color/widget_active_text"
-        android:textSize="9sp"
+        android:textSize="@dimen/widget_marker_text"
         android:textStyle="bold"
         android:visibility="invisible" />
 
     <TextView
         android:id="@+id/isha_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_name_height"
+        android:autoSizeMaxTextSize="@dimen/widget_name_text_max"
+        android:autoSizeMinTextSize="@dimen/widget_name_text_min"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:singleLine="true"
+        android:maxLines="1"
         android:text="Isha"
         android:textColor="@color/widget_label_text"
-        android:textSize="10sp"
         android:textStyle="normal" />
 
     <TextView
         android:id="@+id/isha_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_time_height"
+        android:autoSizeMaxTextSize="@dimen/widget_time_text_max"
+        android:autoSizeMinTextSize="@dimen/widget_time_text_min"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:singleLine="true"
+        android:maxLines="1"
         android:text="7:51"
         android:textColor="@color/widget_time_text"
-        android:textSize="14sp"
         android:textStyle="bold" />
 </LinearLayout>

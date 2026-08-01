@@ -8,10 +8,76 @@ struct PrayBHApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if onboardingStore.isComplete {
-                PrayerHomeView(notificationModel: notificationModel)
-            } else {
+            AppRootView(
+                notificationModel: notificationModel,
+                onboardingStore: onboardingStore
+            )
+        }
+    }
+}
+
+private enum AppRootDestination: Equatable {
+    case notificationOnboarding
+    case notificationSettings
+    case home
+}
+
+private struct AppRootView: View {
+    @ObservedObject var notificationModel: PrayerNotificationSettingsModel
+    @ObservedObject var onboardingStore: OnboardingCompletionStore
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var destination: AppRootDestination
+
+    init(
+        notificationModel: PrayerNotificationSettingsModel,
+        onboardingStore: OnboardingCompletionStore
+    ) {
+        self.notificationModel = notificationModel
+        self.onboardingStore = onboardingStore
+        _destination = State(
+            initialValue: notificationModel.isOnboardingComplete
+                ? .home
+                : .notificationOnboarding
+        )
+    }
+
+    var body: some View {
+        Group {
+            if !onboardingStore.isComplete {
                 FirstLaunchOnboardingView(store: onboardingStore)
+            } else {
+                switch destination {
+                case .notificationOnboarding:
+                    NotificationOnboardingView(model: notificationModel) { route in
+                        destination = route == .settings
+                            ? .notificationSettings
+                            : .home
+                    }
+                case .notificationSettings:
+                    NavigationStack {
+                        NotificationSettingsView(model: notificationModel)
+                            .toolbar {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Done") {
+                                        destination = .home
+                                    }
+                                }
+                            }
+                    }
+                case .home:
+                    PrayerHomeView(notificationModel: notificationModel)
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard
+                phase == .active,
+                destination == .notificationSettings
+            else {
+                return
+            }
+            Task {
+                await notificationModel.handleSettingsSceneBecameActive()
             }
         }
     }
@@ -50,13 +116,6 @@ struct PrayerHomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var showNotificationSettings = false
 
-    private var showOnboarding: Binding<Bool> {
-        Binding(
-            get: { !notificationModel.isOnboardingComplete },
-            set: { _ in }
-        )
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
@@ -78,11 +137,6 @@ struct PrayerHomeView: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(isPresented: $showNotificationSettings) {
                 NotificationSettingsView(model: notificationModel)
-            }
-        }
-        .fullScreenCover(isPresented: showOnboarding) {
-            NotificationOnboardingView(model: notificationModel) {
-                showNotificationSettings = true
             }
         }
         .task {

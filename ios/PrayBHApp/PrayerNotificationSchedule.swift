@@ -30,38 +30,78 @@ enum PrayerNotificationSchedule {
         let calendar = bahrainCalendar
         let startOfToday = calendar.startOfDay(for: startingAt)
         let dayCount = min(max(0, days), maximumDays)
-        var result: [PrayerNotificationOccurrence] = []
-
-        for dayOffset in 0..<dayCount {
-            guard let date = calendar.date(
+        guard
+            dayCount > 0,
+            let horizonEnd = calendar.date(
                 byAdding: .day,
-                value: dayOffset,
+                value: dayCount,
                 to: startOfToday
+            )
+        else {
+            return []
+        }
+
+        var result: [PrayerNotificationOccurrence] = []
+        var responses: [String: PrayerTimesResponse] = [:]
+
+        for notificationPrayer in NotificationPrayer.all
+        where preferences.isEnabled(notificationPrayer) {
+            let offsetMinutes = preferences.offsetMinutes(for: notificationPrayer)
+            guard let firstPossiblePrayerInstant = addingMinutes(
+                offsetMinutes,
+                to: startingAt,
+                calendar: calendar
             ) else {
                 continue
             }
-
-            let dateString = PrayerTimesLocal.bahrainDateString(from: date)
-            let response = PrayerTimesLocal.buildResponse(dateString: dateString)
-            let prayersByKey = Dictionary(
-                uniqueKeysWithValues: response.prayers.map { ($0.key, $0) }
+            let firstCandidateDay = calendar.startOfDay(
+                for: firstPossiblePrayerInstant
             )
 
-            for notificationPrayer in NotificationPrayer.all
-            where preferences.isEnabled(notificationPrayer) {
+            // The shifted interval is still at most `dayCount` days wide. One
+            // extra day on each edge covers prayer times around midnight,
+            // regardless of how large the configured offset is.
+            for dayOffset in 0..<(dayCount + 2) {
                 guard
-                    let prayer = prayersByKey[notificationPrayer.rawValue],
+                    let candidateDay = calendar.date(
+                        byAdding: .day,
+                        value: dayOffset,
+                        to: firstCandidateDay
+                    )
+                else {
+                    continue
+                }
+
+                let dateString = PrayerTimesLocal.bahrainDateString(
+                    from: candidateDay
+                )
+                let response: PrayerTimesResponse
+                if let cached = responses[dateString] {
+                    response = cached
+                } else {
+                    let calculated = PrayerTimesLocal.buildResponse(
+                        dateString: dateString
+                    )
+                    responses[dateString] = calculated
+                    response = calculated
+                }
+
+                guard
+                    let prayer = response.prayers.first(
+                        where: { $0.key == notificationPrayer.rawValue }
+                    ),
                     let prayerDate = makeDate(
                         dateString: dateString,
                         timeString: prayer.time,
                         calendar: calendar
                     ),
-                    let fireDate = calendar.date(
-                        byAdding: .minute,
-                        value: -preferences.offsetMinutes(for: notificationPrayer),
-                        to: prayerDate
+                    let fireDate = subtractingMinutes(
+                        offsetMinutes,
+                        from: prayerDate,
+                        calendar: calendar
                     ),
-                    fireDate > startingAt
+                    fireDate > startingAt,
+                    fireDate < horizonEnd
                 else {
                     continue
                 }
@@ -90,6 +130,52 @@ enum PrayerNotificationSchedule {
                     return $0.fireDate < $1.fireDate
                 }
                 .prefix(min(max(0, maximumCount), maximumOccurrences))
+        )
+    }
+
+    private static func addingMinutes(
+        _ minutes: Int,
+        to date: Date,
+        calendar: Calendar
+    ) -> Date? {
+        guard minutes >= 0 else { return nil }
+        let days = minutes / (24 * 60)
+        let remainingMinutes = minutes % (24 * 60)
+        guard let dayShifted = calendar.date(
+            byAdding: .day,
+            value: days,
+            to: date
+        ) else {
+            return nil
+        }
+        return calendar.date(
+            byAdding: .minute,
+            value: remainingMinutes,
+            to: dayShifted
+        )
+    }
+
+    private static func subtractingMinutes(
+        _ minutes: Int,
+        from date: Date,
+        calendar: Calendar
+    ) -> Date? {
+        guard minutes >= 0 else { return nil }
+        let days = minutes / (24 * 60)
+        let remainingMinutes = minutes % (24 * 60)
+        guard
+            let dayShifted = calendar.date(
+                byAdding: .day,
+                value: -days,
+                to: date
+            )
+        else {
+            return nil
+        }
+        return calendar.date(
+            byAdding: .minute,
+            value: -remainingMinutes,
+            to: dayShifted
         )
     }
 

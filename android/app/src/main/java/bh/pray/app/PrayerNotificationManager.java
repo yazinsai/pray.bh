@@ -59,6 +59,8 @@ public final class PrayerNotificationManager {
 
             PrayerNotificationPreferences preferences =
                 new PrayerNotificationPreferences(appContext);
+            PrayerNotificationSchedule.PreferenceSource preferenceSnapshot =
+                preferences.snapshot();
             Calendar now = Calendar.getInstance(
                 PrayerCalculator.BAHRAIN_TZ,
                 Locale.US
@@ -67,7 +69,7 @@ public final class PrayerNotificationManager {
                 PrayerNotificationSchedule.generate(
                     now,
                     PrayerNotificationSchedule.MAX_DAYS,
-                    preferences.snapshot()
+                    preferenceSnapshot
                 );
 
             Set<String> scheduled = new HashSet<>();
@@ -86,7 +88,12 @@ public final class PrayerNotificationManager {
                 scheduled.add(occurrence.identifier);
             }
             alarmPreferences.edit().putStringSet(IDENTIFIERS_KEY, scheduled).apply();
-            scheduleMaintenanceAlarm(appContext, alarms, now.getTimeInMillis());
+            reconcileMaintenanceAlarm(
+                appContext,
+                alarms,
+                now.getTimeInMillis(),
+                preferenceSnapshot
+            );
         }
     }
 
@@ -103,8 +110,18 @@ public final class PrayerNotificationManager {
 
     public static boolean notificationsEnabled(Context context) {
         NotificationManager manager = context.getSystemService(NotificationManager.class);
-        return hasNotificationPermission(context) &&
-            (manager == null || manager.areNotificationsEnabled());
+        if (manager == null) {
+            return false;
+        }
+        NotificationChannel channel = manager.getNotificationChannel(CHANNEL_ID);
+        int channelImportance = channel == null
+            ? NotificationManager.IMPORTANCE_DEFAULT
+            : channel.getImportance();
+        return PrayerNotificationAvailability.isEnabled(
+            hasNotificationPermission(context),
+            manager.areNotificationsEnabled(),
+            channelImportance
+        );
     }
 
     public static Intent appNotificationSettingsIntent(Context context) {
@@ -134,23 +151,46 @@ public final class PrayerNotificationManager {
         return identifier.hashCode() & 0x7fffffff;
     }
 
-    private static void scheduleMaintenanceAlarm(
+    private static void reconcileMaintenanceAlarm(
         Context context,
         AlarmManager alarms,
-        long nowMillis
+        long nowMillis,
+        PrayerNotificationSchedule.PreferenceSource preferences
     ) {
-        Intent intent = new Intent(context, PrayerRescheduleReceiver.class)
-            .setAction(PrayerMaintenanceSchedule.ACTION);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+        if (!PrayerMaintenanceSchedule.isNeeded(preferences)) {
+            PendingIntent existing = maintenancePendingIntent(
+                context,
+                PendingIntent.FLAG_NO_CREATE
+            );
+            if (existing != null) {
+                alarms.cancel(existing);
+                existing.cancel();
+            }
+            return;
+        }
+
+        PendingIntent pendingIntent = maintenancePendingIntent(
             context,
-            PrayerMaintenanceSchedule.REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT
         );
         alarms.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             PrayerMaintenanceSchedule.nextTriggerMillis(nowMillis),
             pendingIntent
+        );
+    }
+
+    private static PendingIntent maintenancePendingIntent(
+        Context context,
+        int extraFlags
+    ) {
+        Intent intent = new Intent(context, PrayerRescheduleReceiver.class)
+            .setAction(PrayerMaintenanceSchedule.ACTION);
+        return PendingIntent.getBroadcast(
+            context,
+            PrayerMaintenanceSchedule.REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE | extraFlags
         );
     }
 

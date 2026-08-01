@@ -16,39 +16,45 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp">
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:paddingTop="1dp"
                 android:paddingBottom="1dp">
 
                 <TextView
                     android:id="@+id/widget_hijri_date"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="14dp"
                     android:layout_weight="1"
+                    android:autoSizeMaxTextSize="@dimen/widget_header_text"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:autoSizeTextType="uniform"
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:textColor="@color/widget_header_text"
-                    android:textSize="11sp"
                     android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/widget_location"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="14dp"
+                    android:autoSizeMaxTextSize="@dimen/widget_header_text"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:autoSizeTextType="uniform"
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:textColor="@color/widget_brand_text"
-                    android:textSize="11sp"
                     android:textStyle="normal" />
             </LinearLayout>
 
@@ -59,37 +65,9 @@
                 android:orientation="horizontal">
 
                 <include layout="@layout/widget_prayer_column_fajr" />
-                <ImageView
-                    android:layout_width="1dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@null"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/widget_divider" />
                 <include layout="@layout/widget_prayer_column_dhuhr" />
-                <ImageView
-                    android:layout_width="1dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@null"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/widget_divider" />
                 <include layout="@layout/widget_prayer_column_asr" />
-                <ImageView
-                    android:layout_width="1dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@null"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/widget_divider" />
                 <include layout="@layout/widget_prayer_column_maghrib" />
-                <ImageView
-                    android:layout_width="1dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@null"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/widget_divider" />
                 <include layout="@layout/widget_prayer_column_isha" />
             </LinearLayout>
         </LinearLayout>

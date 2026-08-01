@@ -2,6 +2,7 @@ import Foundation
 import UserNotifications
 
 enum NotificationOnboardingRoute: Equatable {
+    case home
     case settings
 }
 
@@ -79,16 +80,17 @@ final class PrayerNotificationSettingsModel: ObservableObject {
         await manager.reconcile()
     }
 
-    func enableAllFromOnboarding() async {
+    func enableAllFromOnboarding() async -> NotificationOnboardingRoute {
         for prayer in NotificationPrayer.all {
             preferences.setOffsetMinutes(0, for: prayer)
             preferences.setEnabled(true, for: prayer)
         }
-        completeOnboarding()
         reloadPreferences()
         await requestPermissionIfNeeded()
         await refreshAuthorizationStatus()
         await manager.reconcile()
+        completeOnboarding()
+        return isPermissionDenied ? .settings : .home
     }
 
     func completeOnboardingForCustomization() -> NotificationOnboardingRoute {
@@ -96,18 +98,23 @@ final class PrayerNotificationSettingsModel: ObservableObject {
         return .settings
     }
 
-    func completeOnboardingWithoutNotifications() {
+    func completeOnboardingWithoutNotifications() -> NotificationOnboardingRoute {
         preferences.disableAll()
         completeOnboarding()
         reloadPreferences()
         Task {
             await manager.reconcile()
         }
+        return .home
     }
 
     func reconcileAndRefresh() async {
         await refreshAuthorizationStatus()
         await manager.reconcile()
+    }
+
+    func handleSettingsSceneBecameActive() async {
+        await reconcileAndRefresh()
     }
 
     func openSystemSettings() {
