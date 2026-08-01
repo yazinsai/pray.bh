@@ -263,19 +263,22 @@ public class MainActivity extends Activity {
             // Column 2: Prayer Name (VStack: English Name + Arabic Name directly beneath)
             LinearLayout namesLayout = new LinearLayout(this);
             namesLayout.setOrientation(LinearLayout.VERTICAL);
+            namesLayout.setGravity(Gravity.START);
 
             TextView nameEn = new TextView(this);
             nameEn.setText(PrayerCalculator.label(key));
             nameEn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             nameEn.setTextColor(isNext ? primaryColor : (isPast ? secondaryColor : primaryColor));
             nameEn.setTypeface(Typeface.DEFAULT, isNext ? Typeface.BOLD : Typeface.NORMAL);
-            namesLayout.addView(nameEn);
+            namesLayout.addView(nameEn, wrapWrap());
 
             TextView nameAr = new TextView(this);
             nameAr.setText(PrayerCalculator.arabicLabel(key));
-            nameAr.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            nameAr.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             nameAr.setTextColor(isNext ? accentColor : secondaryColor);
-            LinearLayout.LayoutParams arParams = matchWrap();
+            nameAr.setGravity(Gravity.START);
+            nameAr.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            LinearLayout.LayoutParams arParams = wrapWrap();
             arParams.topMargin = dp(2);
             namesLayout.addView(nameAr, arParams);
 
@@ -309,7 +312,7 @@ public class MainActivity extends Activity {
             row.addView(timeLayout, wrapWrap());
 
             // Set past row opacity
-            row.setAlpha(isPast ? 0.42f : 1.0f);
+            row.setAlpha(isPast ? 0.50f : 1.0f);
 
             prayerListContainer.addView(row, matchWrap());
 
