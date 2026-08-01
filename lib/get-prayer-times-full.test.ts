@@ -16,10 +16,16 @@ describe('getPrayerTimes - Full Year Validation', () => {
     return Math.abs(timeToMinutes(calculated) - timeToMinutes(canonical));
   }
 
-  describe('Full year accuracy test against AWQAF canonical data', () => {
+  function getCanonical(dateStr: string): PrayerTimes {
+    const parts = dateStr.split('-');
+    const mmdd = parts.length === 3 ? `${parts[1]}-${parts[2]}` : dateStr;
+    const lookupKey = mmdd === '02-29' ? '02-28' : mmdd;
+    return (canonicalData as Record<string, PrayerTimes>)[lookupKey];
+  }
+
+  describe('Full year exact match test against AWQAF canonical data', () => {
     const dates = Object.keys(canonicalData).sort();
     
-    // Statistics tracking
     const stats = {
       fajr: { total: 0, max: 0, maxDate: '' },
       shurooq: { total: 0, max: 0, maxDate: '' },
@@ -30,37 +36,36 @@ describe('getPrayerTimes - Full Year Validation', () => {
     };
 
     dates.forEach(date => {
-      it(`should calculate times accurately for ${date}`, () => {
-        const canonical = canonicalData[date as keyof typeof canonicalData] as PrayerTimes;
+      it(`should calculate times with 0 minute difference for ${date}`, () => {
+        const canonical = getCanonical(date);
         const calculated = getPrayerTimes(bahrain, date);
         
-        // Test each prayer time
         const prayers = ['fajr', 'shurooq', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
         
         prayers.forEach(prayer => {
           const diff = getTimeDifference(calculated[prayer], canonical[prayer]);
           
-          // Track statistics
           stats[prayer].total += diff;
           if (diff > stats[prayer].max) {
             stats[prayer].max = diff;
             stats[prayer].maxDate = date;
           }
           
-          // Assert difference is within acceptable range (2 minutes)
-          expect(diff).toBeLessThanOrEqual(2);
+          // Assert exact match (0 minutes difference)
+          expect(diff).toBe(0);
+          expect(calculated[prayer]).toBe(canonical[prayer]);
         });
       });
     });
 
-    it('should have low average deviation across the year', () => {
+    it('should have 0 average deviation across the year', () => {
       const prayers = ['fajr', 'shurooq', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
       
       prayers.forEach(prayer => {
         const avgDiff = stats[prayer].total / dates.length;
         
-        // Average difference should be less than 1.5 minutes (very good accuracy)
-        expect(avgDiff).toBeLessThan(1.5);
+        expect(avgDiff).toBe(0);
+        expect(stats[prayer].max).toBe(0);
         
         console.log(
           `${prayer}: avg=${avgDiff.toFixed(2)} min, max=${stats[prayer].max} min on ${stats[prayer].maxDate}`
@@ -70,7 +75,6 @@ describe('getPrayerTimes - Full Year Validation', () => {
   });
 
   describe('Monthly pattern validation', () => {
-    // Test one day from each month
     const monthlyTests = [
       { month: 'January', date: '2024-01-15' },
       { month: 'February', date: '2024-02-15' },
@@ -87,14 +91,14 @@ describe('getPrayerTimes - Full Year Validation', () => {
     ];
 
     monthlyTests.forEach(({ month, date }) => {
-      it(`should calculate accurate times for ${month}`, () => {
-        const canonical = canonicalData[date as keyof typeof canonicalData] as PrayerTimes;
+      it(`should calculate exact times for ${month}`, () => {
+        const canonical = getCanonical(date);
         const calculated = getPrayerTimes(bahrain, date);
         
-        expect(getTimeDifference(calculated.fajr, canonical.fajr)).toBeLessThanOrEqual(2);
-        expect(getTimeDifference(calculated.dhuhr, canonical.dhuhr)).toBeLessThanOrEqual(2);
-        expect(getTimeDifference(calculated.maghrib, canonical.maghrib)).toBeLessThanOrEqual(2);
-        expect(getTimeDifference(calculated.isha, canonical.isha)).toBeLessThanOrEqual(2);
+        expect(calculated.fajr).toBe(canonical.fajr);
+        expect(calculated.dhuhr).toBe(canonical.dhuhr);
+        expect(calculated.maghrib).toBe(canonical.maghrib);
+        expect(calculated.isha).toBe(canonical.isha);
       });
     });
   });
@@ -111,60 +115,16 @@ describe('getPrayerTimes - Full Year Validation', () => {
     ];
 
     criticalDates.forEach(({ name, date }) => {
-      if (canonicalData[date as keyof typeof canonicalData]) {
-        it(`should handle ${name} (${date}) correctly`, () => {
-          const canonical = canonicalData[date as keyof typeof canonicalData] as PrayerTimes;
-          const calculated = getPrayerTimes(bahrain, date);
-          
-          // All times should be within 2 minutes
-          expect(getTimeDifference(calculated.fajr, canonical.fajr)).toBeLessThanOrEqual(2);
-          expect(getTimeDifference(calculated.shurooq, canonical.shurooq)).toBeLessThanOrEqual(2);
-          expect(getTimeDifference(calculated.dhuhr, canonical.dhuhr)).toBeLessThanOrEqual(2);
-          expect(getTimeDifference(calculated.asr, canonical.asr)).toBeLessThanOrEqual(2);
-          expect(getTimeDifference(calculated.maghrib, canonical.maghrib)).toBeLessThanOrEqual(2);
-          expect(getTimeDifference(calculated.isha, canonical.isha)).toBeLessThanOrEqual(2);
-        });
-      }
-    });
-  });
-
-  describe('Seasonal daylight patterns', () => {
-    it('should show correct seasonal variation in day length', () => {
-      const summerDate = '2024-06-21';
-      const winterDate = '2024-12-21';
-      
-      const summerCanonical = canonicalData[summerDate as keyof typeof canonicalData] as PrayerTimes;
-      const winterCanonical = canonicalData[winterDate as keyof typeof canonicalData] as PrayerTimes;
-      
-      const summerDayLength = timeToMinutes(summerCanonical.maghrib) - timeToMinutes(summerCanonical.shurooq);
-      const winterDayLength = timeToMinutes(winterCanonical.maghrib) - timeToMinutes(winterCanonical.shurooq);
-      
-      // Summer days should be longer than winter days
-      expect(summerDayLength).toBeGreaterThan(winterDayLength);
-      
-      // The difference should be significant (at least 2 hours)
-      expect(summerDayLength - winterDayLength).toBeGreaterThan(120);
-    });
-
-    it('should show correct Fajr-Isha interval patterns', () => {
-      const dates = ['2024-01-15', '2024-04-15', '2024-07-15', '2024-10-15'];
-      
-      dates.forEach(date => {
-        const canonical = canonicalData[date as keyof typeof canonicalData] as PrayerTimes;
+      it(`should handle ${name} (${date}) correctly`, () => {
+        const canonical = getCanonical(date);
         const calculated = getPrayerTimes(bahrain, date);
         
-        // Fajr should always be before sunrise
-        expect(timeToMinutes(calculated.fajr)).toBeLessThan(timeToMinutes(calculated.shurooq));
-        
-        // Isha should always be after Maghrib
-        expect(timeToMinutes(calculated.isha)).toBeGreaterThan(timeToMinutes(calculated.maghrib));
-        
-        // The calculated times should follow the same pattern as canonical
-        const canonicalFajrIsha = timeToMinutes(canonical.isha) - timeToMinutes(canonical.fajr);
-        const calculatedFajrIsha = timeToMinutes(calculated.isha) - timeToMinutes(calculated.fajr);
-        
-        // The total span should be similar (within 5 minutes)
-        expect(Math.abs(calculatedFajrIsha - canonicalFajrIsha)).toBeLessThanOrEqual(5);
+        expect(calculated.fajr).toBe(canonical.fajr);
+        expect(calculated.shurooq).toBe(canonical.shurooq);
+        expect(calculated.dhuhr).toBe(canonical.dhuhr);
+        expect(calculated.asr).toBe(canonical.asr);
+        expect(calculated.maghrib).toBe(canonical.maghrib);
+        expect(calculated.isha).toBe(canonical.isha);
       });
     });
   });

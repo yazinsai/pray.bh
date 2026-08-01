@@ -10,15 +10,15 @@ describe('buildPrayerTimesApiResponse', () => {
     expect(response.date).toBe('2026-07-25')
     expect(response.timezone).toBe('Asia/Bahrain')
     expect(response.location).toEqual(DEFAULT_BAHRAIN_LOCATION)
-    expect(response.times.fajr).toBe('03:33')
+    expect(response.times.fajr).toBe('03:32')
     expect(response.prayers).toHaveLength(6)
     expect(response.prayers[0]).toEqual(
       expect.objectContaining({
         key: 'fajr',
         nameEn: 'Fajr',
         nameAr: 'الفجر',
-        time: '03:33',
-        isoTime: '2026-07-25T03:33:00+03:00',
+        time: '03:32',
+        isoTime: '2026-07-25T03:32:00+03:00',
       }),
     )
   })
@@ -31,6 +31,6 @@ describe('buildPrayerTimesApiResponse', () => {
     expect(response.date).toBe('2026-07-25')
     expect(response.currentPrayer.key).toBe('shurooq')
     expect(response.nextPrayer.key).toBe('dhuhr')
-    expect(response.minutesUntilNextPrayer).toBe(164)
+    expect(response.minutesUntilNextPrayer).toBe(165)
   })
 })
