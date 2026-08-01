@@ -131,6 +131,7 @@ struct PrayerRow: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(prayer.nameEn)
                     .font(.body.weight(isNext ? .semibold : .regular))
+                    .foregroundStyle(isNext ? Brand.accent : Color(.label))
                 Text(prayer.nameAr)
                     .font(.caption)
                     .foregroundStyle(Color(.secondaryLabel))

@@ -173,7 +173,7 @@ struct PrayerTimeColumn: View {
 
             Text(shortName(prayer, isArabic: isArabic))
                 .font(.system(size: isArabic ? 14 : 13, weight: isNext ? .semibold : .medium, design: .rounded))
-                .foregroundStyle(isNext ? Color(.label) : Color(.secondaryLabel))
+                .foregroundStyle(isNext ? Brand.accent : Color(.secondaryLabel))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
