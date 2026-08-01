@@ -3,6 +3,7 @@ package bh.pray.app;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -13,6 +14,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,7 +34,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupUI();
 
         timerHandler = new Handler(Looper.getMainLooper());
         timerRunnable = new Runnable() {
@@ -42,12 +43,35 @@ public class MainActivity extends Activity {
                 timerHandler.postDelayed(this, 1000);
             }
         };
+        PrayerNotificationManager.createNotificationChannel(this);
+
+        OnboardingCompletionStore onboardingStore = new OnboardingCompletionStore(this);
+        if (!onboardingStore.isComplete()) {
+            setContentView(new OnboardingView(this, onboardingStore, this::showPrayerHome));
+        } else {
+            showPrayerHome();
+        }
+    }
+
+    private void showPrayerHome() {
+        setupUI();
+        updateUI();
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            timerHandler.postDelayed(timerRunnable, 1000);
+        }
+        PrayerNotificationPreferences notificationPreferences =
+            new PrayerNotificationPreferences(this);
+        if (!notificationPreferences.isOnboardingComplete()) {
+            startActivity(new Intent(this, NotificationOnboardingActivity.class));
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateUI();
+        PrayerNotificationManager.reconcile(this);
         if (timerHandler != null && timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
             timerHandler.postDelayed(timerRunnable, 1000);
@@ -107,6 +131,30 @@ public class MainActivity extends Activity {
         brandParams.addRule(RelativeLayout.CENTER_VERTICAL);
         topRow.addView(brandTitle, brandParams);
 
+        ImageButton notificationSettings = new ImageButton(this);
+        notificationSettings.setId(View.generateViewId());
+        notificationSettings.setImageResource(R.drawable.ic_notifications);
+        notificationSettings.setImageTintList(
+            ColorStateList.valueOf(getColor(R.color.brand_accent))
+        );
+        notificationSettings.setContentDescription("Prayer notification settings");
+        notificationSettings.setPadding(dp(9), dp(9), dp(9), dp(9));
+        GradientDrawable settingsBackground = new GradientDrawable();
+        settingsBackground.setColor(getColor(R.color.hero_bg));
+        settingsBackground.setCornerRadius(dp(12));
+        settingsBackground.setStroke(dp(1), getColor(R.color.hero_border));
+        notificationSettings.setBackground(settingsBackground);
+        notificationSettings.setOnClickListener(view ->
+            startActivity(new Intent(this, NotificationSettingsActivity.class))
+        );
+        RelativeLayout.LayoutParams settingsParams = new RelativeLayout.LayoutParams(
+            dp(40),
+            dp(40)
+        );
+        settingsParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+        settingsParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        topRow.addView(notificationSettings, settingsParams);
+
         // Status Badge: "Next: Dhuhr in 4h 18m" (Replaces duplicate device time)
         nextStatusView = new TextView(this);
         nextStatusView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
@@ -124,8 +172,9 @@ public class MainActivity extends Activity {
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        statusParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+        statusParams.addRule(RelativeLayout.LEFT_OF, notificationSettings.getId());
         statusParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        statusParams.setMarginEnd(dp(8));
         topRow.addView(nextStatusView, statusParams);
 
         header.addView(topRow, matchWrap());

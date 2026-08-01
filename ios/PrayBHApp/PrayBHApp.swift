@@ -3,9 +3,16 @@ import WidgetKit
 
 @main
 struct PrayBHApp: App {
+    @StateObject private var notificationModel = PrayerNotificationSettingsModel()
+    @StateObject private var onboardingStore = OnboardingCompletionStore()
+
     var body: some Scene {
         WindowGroup {
-            PrayerHomeView()
+            if onboardingStore.isComplete {
+                PrayerHomeView(notificationModel: notificationModel)
+            } else {
+                FirstLaunchOnboardingView(store: onboardingStore)
+            }
         }
     }
 }
@@ -39,13 +46,24 @@ final class PrayerTimesModel: ObservableObject {
 
 struct PrayerHomeView: View {
     @StateObject private var model = PrayerTimesModel()
+    @ObservedObject var notificationModel: PrayerNotificationSettingsModel
     @Environment(\.scenePhase) private var scenePhase
+    @State private var showNotificationSettings = false
+
+    private var showOnboarding: Binding<Bool> {
+        Binding(
+            get: { !notificationModel.isOnboardingComplete },
+            set: { _ in }
+        )
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {
-                    HeaderView(date: model.now)
+                    HeaderView(date: model.now) {
+                        showNotificationSettings = true
+                    }
                     PrayerList(response: model.response, now: model.now)
                 }
                 .padding(.horizontal, 20)
@@ -58,16 +76,33 @@ struct PrayerHomeView: View {
             .safeAreaPadding(.bottom, 16)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(isPresented: $showNotificationSettings) {
+                NotificationSettingsView(model: notificationModel)
+            }
         }
-        .task { model.start() }
+        .fullScreenCover(isPresented: showOnboarding) {
+            NotificationOnboardingView(model: notificationModel) {
+                showNotificationSettings = true
+            }
+        }
+        .task {
+            model.start()
+            await notificationModel.reconcileAndRefresh()
+        }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { model.refresh() }
+            if phase == .active {
+                model.refresh()
+                Task {
+                    await notificationModel.reconcileAndRefresh()
+                }
+            }
         }
     }
 }
 
 struct HeaderView: View {
     let date: Date
+    let openNotificationSettings: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -79,6 +114,14 @@ struct HeaderView: View {
                     .font(.callout)
                     .monospacedDigit()
                     .foregroundStyle(Color(.secondaryLabel))
+                Button(action: openNotificationSettings) {
+                    Image(systemName: "bell")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Brand.accent)
+                        .frame(width: 32, height: 32)
+                        .background(Brand.accent.opacity(0.1), in: Circle())
+                }
+                .accessibilityLabel("Prayer notification settings")
             }
 
             HStack(spacing: 6) {
@@ -184,5 +227,5 @@ func hijriDateString(from date: Date) -> String {
 }
 
 #Preview {
-    PrayerHomeView()
+    PrayerHomeView(notificationModel: PrayerNotificationSettingsModel())
 }

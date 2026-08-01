@@ -519,9 +519,9 @@ enum PrayerTimesCalculator {
         let parts = dateString.split(separator: "-").map { String($0) }
         var mmdd = dateString
         if parts.count == 3 {
-            mmdd = "(parts[1])-(parts[2])"
+            mmdd = "\(parts[1])-\(parts[2])"
         } else if parts.count == 2 {
-            mmdd = "(parts[0])-(parts[1])"
+            mmdd = "\(parts[0])-\(parts[1])"
         }
 
         if mmdd == "02-29" {

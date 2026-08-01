@@ -6,7 +6,7 @@ options:
 settings:
   base:
     MARKETING_VERSION: "0.1.5"
-    CURRENT_PROJECT_VERSION: "8"
+    CURRENT_PROJECT_VERSION: "10"
     SWIFT_VERSION: "5.0"
     DEVELOPMENT_TEAM: 88M2R3XJZH
     CODE_SIGN_STYLE: Automatic
@@ -39,3 +39,16 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: bh.pray.app.widget
         INFOPLIST_FILE: PrayBHWidget/Info.plist
         SKIP_INSTALL: true
+  PrayBHTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: PrayBHTests
+        excludes:
+          - Info.plist
+    dependencies:
+      - target: PrayBH
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: bh.pray.app.tests
+        INFOPLIST_FILE: PrayBHTests/Info.plist
