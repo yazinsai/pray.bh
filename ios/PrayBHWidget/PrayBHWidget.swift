@@ -56,6 +56,72 @@ struct PrayerWidgetView: View {
     }
 }
 
+struct WidgetTexturedBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+
+            // Soft brand wash — keeps the texture from reading as plain gray.
+            LinearGradient(
+                colors: [
+                    Brand.accent.opacity(colorScheme == .dark ? 0.14 : 0.07),
+                    Color.clear,
+                    Brand.accent.opacity(colorScheme == .dark ? 0.09 : 0.045)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            // Fine diagonal weave + sparse stipple for a paper/linen feel.
+            Canvas { context, size in
+                let lineOpacity = colorScheme == .dark ? 0.055 : 0.04
+                let stippleOpacity = colorScheme == .dark ? 0.07 : 0.05
+                let lineColor = Color.primary.opacity(lineOpacity)
+                let stippleColor = Brand.accent.opacity(stippleOpacity)
+                let spacing: CGFloat = 7
+
+                var path = Path()
+                let extent = size.width + size.height
+                var offset: CGFloat = -size.height
+                while offset < extent {
+                    path.move(to: CGPoint(x: offset, y: 0))
+                    path.addLine(to: CGPoint(x: offset + size.height, y: size.height))
+                    offset += spacing
+                }
+                context.stroke(path, with: .color(lineColor), lineWidth: 0.6)
+
+                let dotSpacing: CGFloat = 11
+                var y: CGFloat = 4
+                var row = 0
+                while y < size.height {
+                    var x: CGFloat = row.isMultiple(of: 2) ? 3 : 8.5
+                    while x < size.width {
+                        let rect = CGRect(x: x, y: y, width: 1.1, height: 1.1)
+                        context.fill(Path(ellipseIn: rect), with: .color(stippleColor))
+                        x += dotSpacing
+                    }
+                    y += dotSpacing * 0.85
+                    row += 1
+                }
+            }
+            .opacity(0.9)
+
+            // Soft corner bloom so the weave doesn't feel flat.
+            RadialGradient(
+                colors: [
+                    Brand.accent.opacity(colorScheme == .dark ? 0.10 : 0.055),
+                    Color.clear
+                ],
+                center: .topTrailing,
+                startRadius: 4,
+                endRadius: 120
+            )
+        }
+    }
+}
+
 struct SmallPrayerWidget: View {
     let entry: PrayerEntry
 
@@ -100,7 +166,7 @@ struct SmallPrayerWidget: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            WidgetTexturedBackground()
         }
     }
 }
@@ -149,7 +215,7 @@ struct MediumPrayerWidget: View {
         .frame(maxHeight: .infinity)
         .environment(\.layoutDirection, isArabic ? .rightToLeft : .leftToRight)
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            WidgetTexturedBackground()
         }
     }
 }

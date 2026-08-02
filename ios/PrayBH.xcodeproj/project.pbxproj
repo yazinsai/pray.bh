@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A96878ABC9DD71ED960E013 /* onboarding_privacy.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 2DEFB8E79E43FB83671A3744 /* onboarding_privacy.mp4 */; };
 		1A04E613009FA367C20BDCE5 /* PrayerDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */; };
 		1AC40769CD3B0FEBA05F3623 /* PrayerNotificationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B1D85023F63F2A809D3578 /* PrayerNotificationManagerTests.swift */; };
 		1BAF750A2870B06FB7C2D910 /* OnboardingCompletionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09528A023E67AAB842D0EDFC /* OnboardingCompletionStore.swift */; };
@@ -19,13 +20,18 @@
 		47AED387E8CCD76A0605B2EA /* PrayerTimesLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E3568563782C93239A773B /* PrayerTimesLocal.swift */; };
 		4A1C07EB1710FFBC89FA329A /* PrayerNotificationSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD7B2AF7E4009F08E4A8A2F /* PrayerNotificationSchedule.swift */; };
 		4A2E9B6719E7EC2B218A8D70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */; };
+		5284D8F745EF2DE4A2CF8023 /* onboarding_offline.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = D3F61D80C799B6DE392FD7DB /* onboarding_offline.mp4 */; };
 		5406E8DED7CF8BF67FBEF034 /* PrayerTimesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98801591F0638FBE8948A3B2 /* PrayerTimesCalculator.swift */; };
 		544F9EC0F0E92A2F87E7F9C2 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */; };
 		6236E38A49A6876468042CCD /* FirstLaunchOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAA6F71FA5D4A8732CF9A5F /* FirstLaunchOnboardingView.swift */; };
+		78D192CC639BF5BCC7CC3E01 /* AppShareCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BC29E36F1161F0084A6E6 /* AppShareCopy.swift */; };
+		7CE1B1A9DE21C74C00DB4997 /* onboarding_widget.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AD70C6336791A9797695EF34 /* onboarding_widget.mp4 */; };
 		8763B66C56BA2B973436AECD /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7335A0AAD1CE72E0A518EA03 /* BrandTheme.swift */; };
 		927A379C19A74A6276A0EA53 /* PrayBHWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		96B0E6133F17B4CF978C956C /* PrayerDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */; };
+		9D7ED565596C30347D59EDC1 /* WhatsAppShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337541FC64EE1707F9F6794F /* WhatsAppShare.swift */; };
 		AE1B07D5AC07396CB2413795 /* OnboardingCompletionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2D695161D29E533A05EB64 /* OnboardingCompletionStoreTests.swift */; };
+		B1D2FADE6A42D9D5F23F7AC1 /* onboarding_bahrain.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 10A6F35925945DB60449788B /* onboarding_bahrain.mp4 */; };
 		C22F90D00569D532096D9C01 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64665105D9F57DA1C2A8A956 /* NotificationSettingsView.swift */; };
 		CD362264BA14E5044536C687 /* PrayBHWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8AD55E5421E313325B9348 /* PrayBHWidget.swift */; };
 		CEED4B1F07234B8820DDB8F4 /* PrayerNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C1F869BD9626F5BCB1805CF /* PrayerNotificationManager.swift */; };
@@ -65,14 +71,18 @@
 
 /* Begin PBXFileReference section */
 		09528A023E67AAB842D0EDFC /* OnboardingCompletionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompletionStore.swift; sourceTree = "<group>"; };
+		10A6F35925945DB60449788B /* onboarding_bahrain.mp4 */ = {isa = PBXFileReference; path = onboarding_bahrain.mp4; sourceTree = "<group>"; };
 		1479BF0FBFA9C695816C6270 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		147EAB728CA10E2007F4DBCE /* PrayBHTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PrayBHTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28EE761BE2C67F3A00060CD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2BBB2C08D741DFE5765AFF53 /* PrayerNotificationSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationSettingsModel.swift; sourceTree = "<group>"; };
+		2DEFB8E79E43FB83671A3744 /* onboarding_privacy.mp4 */ = {isa = PBXFileReference; path = onboarding_privacy.mp4; sourceTree = "<group>"; };
+		337541FC64EE1707F9F6794F /* WhatsAppShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsAppShare.swift; sourceTree = "<group>"; };
 		3C1F869BD9626F5BCB1805CF /* PrayerNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationManager.swift; sourceTree = "<group>"; };
 		4AD7E46FA9CC14848FEC9227 /* PrayBH.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrayBH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C2D695161D29E533A05EB64 /* OnboardingCompletionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCompletionStoreTests.swift; sourceTree = "<group>"; };
 		64665105D9F57DA1C2A8A956 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
+		664BC29E36F1161F0084A6E6 /* AppShareCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShareCopy.swift; sourceTree = "<group>"; };
 		669EC81997331EEB946D7F2C /* PrayBHApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayBHApp.swift; sourceTree = "<group>"; };
 		670514CB6F9A9F6E9B59C3C7 /* PrayerDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerDisplay.swift; sourceTree = "<group>"; };
 		67EA16205BD7B706575CB589 /* PrayerNotificationScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationScheduleTests.swift; sourceTree = "<group>"; };
@@ -83,9 +93,11 @@
 		8224F03C6F0042675BE69C3F /* PrayBHWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrayBHWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E3568563782C93239A773B /* PrayerTimesLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesLocal.swift; sourceTree = "<group>"; };
 		98801591F0638FBE8948A3B2 /* PrayerTimesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesCalculator.swift; sourceTree = "<group>"; };
+		AD70C6336791A9797695EF34 /* onboarding_widget.mp4 */ = {isa = PBXFileReference; path = onboarding_widget.mp4; sourceTree = "<group>"; };
 		B08B135793FB61E931D9DF88 /* PrayerNotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationPreferences.swift; sourceTree = "<group>"; };
 		B3B1D85023F63F2A809D3578 /* PrayerNotificationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationManagerTests.swift; sourceTree = "<group>"; };
 		BF8AD55E5421E313325B9348 /* PrayBHWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayBHWidget.swift; sourceTree = "<group>"; };
+		D3F61D80C799B6DE392FD7DB /* onboarding_offline.mp4 */ = {isa = PBXFileReference; path = onboarding_offline.mp4; sourceTree = "<group>"; };
 		E9A872C390A2043A3B735DE5 /* NotificationOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationOnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +114,7 @@
 		338BF2036C91F9E5AECC08D2 = {
 			isa = PBXGroup;
 			children = (
+				5522454DEF64C9D0641159E4 /* OnboardingMedia */,
 				D69B78B1DF49117190C327C4 /* PrayBHApp */,
 				908B448874A54380ADBB9B31 /* PrayBHTests */,
 				299C2FE9057B78C37009E7AE /* PrayBHWidget */,
@@ -120,6 +133,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5522454DEF64C9D0641159E4 /* OnboardingMedia */ = {
+			isa = PBXGroup;
+			children = (
+				10A6F35925945DB60449788B /* onboarding_bahrain.mp4 */,
+				D3F61D80C799B6DE392FD7DB /* onboarding_offline.mp4 */,
+				2DEFB8E79E43FB83671A3744 /* onboarding_privacy.mp4 */,
+				AD70C6336791A9797695EF34 /* onboarding_widget.mp4 */,
+			);
+			name = OnboardingMedia;
+			path = PrayBHApp/OnboardingMedia;
+			sourceTree = "<group>";
+		};
 		908B448874A54380ADBB9B31 /* PrayBHTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +158,7 @@
 		D69B78B1DF49117190C327C4 /* PrayBHApp */ = {
 			isa = PBXGroup;
 			children = (
+				664BC29E36F1161F0084A6E6 /* AppShareCopy.swift */,
 				74ABCF9829FF0CB2F36B95D4 /* Assets.xcassets */,
 				6CAA6F71FA5D4A8732CF9A5F /* FirstLaunchOnboardingView.swift */,
 				28EE761BE2C67F3A00060CD5 /* Info.plist */,
@@ -144,6 +170,7 @@
 				B08B135793FB61E931D9DF88 /* PrayerNotificationPreferences.swift */,
 				7DD7B2AF7E4009F08E4A8A2F /* PrayerNotificationSchedule.swift */,
 				2BBB2C08D741DFE5765AFF53 /* PrayerNotificationSettingsModel.swift */,
+				337541FC64EE1707F9F6794F /* WhatsAppShare.swift */,
 			);
 			path = PrayBHApp;
 			sourceTree = "<group>";
@@ -267,6 +294,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A2E9B6719E7EC2B218A8D70 /* Assets.xcassets in Resources */,
+				B1D2FADE6A42D9D5F23F7AC1 /* onboarding_bahrain.mp4 in Resources */,
+				5284D8F745EF2DE4A2CF8023 /* onboarding_offline.mp4 in Resources */,
+				0A96878ABC9DD71ED960E013 /* onboarding_privacy.mp4 in Resources */,
+				7CE1B1A9DE21C74C00DB4997 /* onboarding_widget.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +330,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78D192CC639BF5BCC7CC3E01 /* AppShareCopy.swift in Sources */,
 				8763B66C56BA2B973436AECD /* BrandTheme.swift in Sources */,
 				6236E38A49A6876468042CCD /* FirstLaunchOnboardingView.swift in Sources */,
 				39B5A3C76CB20E6B479EFF37 /* NotificationOnboardingView.swift in Sources */,
@@ -312,6 +344,7 @@
 				3EC3251F1B1578D70994239B /* PrayerNotificationSettingsModel.swift in Sources */,
 				28A52E54D9DC6B015BCC6058 /* PrayerTimesCalculator.swift in Sources */,
 				47AED387E8CCD76A0605B2EA /* PrayerTimesLocal.swift in Sources */,
+				9D7ED565596C30347D59EDC1 /* WhatsAppShare.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,7 +497,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 88M2R3XJZH;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -478,7 +511,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.6;
+				MARKETING_VERSION = 0.1.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -524,7 +557,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 88M2R3XJZH;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -544,7 +577,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.6;
+				MARKETING_VERSION = 0.1.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

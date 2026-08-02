@@ -189,6 +189,29 @@ public class MainActivity extends Activity {
         settingsParams.addRule(RelativeLayout.CENTER_VERTICAL);
         topRow.addView(notificationSettings, settingsParams);
 
+        ImageButton shareApp = new ImageButton(this);
+        shareApp.setId(View.generateViewId());
+        shareApp.setImageResource(R.drawable.ic_share);
+        shareApp.setImageTintList(
+            ColorStateList.valueOf(getColor(R.color.brand_accent))
+        );
+        shareApp.setContentDescription("Share app on WhatsApp");
+        shareApp.setPadding(dp(9), dp(9), dp(9), dp(9));
+        GradientDrawable shareBackground = new GradientDrawable();
+        shareBackground.setColor(getColor(R.color.hero_bg));
+        shareBackground.setCornerRadius(dp(12));
+        shareBackground.setStroke(dp(1), getColor(R.color.hero_border));
+        shareApp.setBackground(shareBackground);
+        shareApp.setOnClickListener(view -> WhatsAppShare.shareApp(this));
+        RelativeLayout.LayoutParams shareParams = new RelativeLayout.LayoutParams(
+            dp(40),
+            dp(40)
+        );
+        shareParams.addRule(RelativeLayout.LEFT_OF, notificationSettings.getId());
+        shareParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        shareParams.setMarginEnd(dp(8));
+        topRow.addView(shareApp, shareParams);
+
         // Status Badge: "Next: Dhuhr in 4h 18m" (Replaces duplicate device time)
         nextStatusView = new TextView(this);
         nextStatusView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
@@ -206,7 +229,7 @@ public class MainActivity extends Activity {
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        statusParams.addRule(RelativeLayout.LEFT_OF, notificationSettings.getId());
+        statusParams.addRule(RelativeLayout.LEFT_OF, shareApp.getId());
         statusParams.addRule(RelativeLayout.CENTER_VERTICAL);
         statusParams.setMarginEnd(dp(8));
         topRow.addView(nextStatusView, statusParams);

@@ -120,9 +120,11 @@ struct PrayerHomeView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {
-                    HeaderView(date: model.now) {
-                        showNotificationSettings = true
-                    }
+                    HeaderView(
+                        date: model.now,
+                        openNotificationSettings: { showNotificationSettings = true },
+                        shareApp: { WhatsAppShare.shareApp() }
+                    )
                     PrayerList(response: model.response, now: model.now)
                 }
                 .padding(.horizontal, 20)
@@ -157,6 +159,7 @@ struct PrayerHomeView: View {
 struct HeaderView: View {
     let date: Date
     let openNotificationSettings: () -> Void
+    let shareApp: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -168,6 +171,14 @@ struct HeaderView: View {
                     .font(.callout)
                     .monospacedDigit()
                     .foregroundStyle(Color(.secondaryLabel))
+                Button(action: shareApp) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Brand.accent)
+                        .frame(width: 32, height: 32)
+                        .background(Brand.accent.opacity(0.1), in: Circle())
+                }
+                .accessibilityLabel("Share app on WhatsApp")
                 Button(action: openNotificationSettings) {
                     Image(systemName: "bell")
                         .font(.system(size: 16, weight: .semibold))

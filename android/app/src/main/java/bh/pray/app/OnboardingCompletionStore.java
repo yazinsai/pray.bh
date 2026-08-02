@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
  */
 public final class OnboardingCompletionStore {
     public static final String PREFS_NAME = "pray_bh_onboarding";
-    public static final String KEY = "onboarding.v1.complete";
+    public static final String KEY = "onboarding.v2.complete";
 
     private final SharedPreferences prefs;
 

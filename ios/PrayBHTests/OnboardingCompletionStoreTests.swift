@@ -39,7 +39,17 @@ final class OnboardingCompletionStoreTests: XCTestCase {
 
     func testPagesIncludeWidgetBenefit() {
         XCTAssertEqual(OnboardingPages.all.count, 4)
-        XCTAssertEqual(OnboardingPages.all[2].title, "On your Home Screen")
-        XCTAssertEqual(OnboardingPages.all[2].artwork, .widget)
+        XCTAssertEqual(OnboardingPages.all[2].title, "Home Screen widget")
+        XCTAssertEqual(OnboardingPages.all[2].mediaName, "onboarding_widget")
+    }
+
+    func testKeyIsVersionedV2() {
+        XCTAssertEqual(OnboardingCompletionStore.key, "onboarding.v2.complete")
+    }
+
+    func testShareCopyIncludesBothStoreLinks() {
+        XCTAssertTrue(AppShareCopy.message.contains(AppShareCopy.appStoreURL))
+        XCTAssertTrue(AppShareCopy.message.contains(AppShareCopy.playStoreURL))
+        XCTAssertTrue(AppShareCopy.appStoreURL.contains("id6795117101"))
     }
 }

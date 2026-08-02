@@ -1,6 +1,11 @@
 <resources>
     <color name="brand_accent">#3DA387</color>
     <color name="app_background">#121214</color>
+    <!-- Onboarding matches video canvas even in dark mode -->
+    <color name="onboarding_background">#F4EFE9</color>
+    <color name="onboarding_text_primary">#1A1F1C</color>
+    <color name="onboarding_text_secondary">#595E59</color>
+    <color name="onboarding_text_muted">#8C8F8A</color>
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#9A9A9E</color>
     <color name="text_tertiary">#6C6C70</color>

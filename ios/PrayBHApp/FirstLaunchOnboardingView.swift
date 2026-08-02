@@ -1,46 +1,48 @@
+import AVKit
 import SwiftUI
 
 struct OnboardingPage: Identifiable, Equatable {
     let id: Int
     let title: String
     let body: String
-    let artwork: OnboardingArtwork
-}
-
-enum OnboardingArtwork: Equatable {
-    case privacy
-    case offline
-    case widget
-    case bahrain
+    let mediaName: String
 }
 
 enum OnboardingPages {
     static let all: [OnboardingPage] = [
         OnboardingPage(
             id: 0,
-            title: "Private by design",
-            body: "No account, no tracking, and no personal data collected.",
-            artwork: .privacy
+            title: "Prayer times. Private.",
+            body: "No MyGov login. No account. No tracking. Just today’s times.",
+            mediaName: "onboarding_privacy"
         ),
         OnboardingPage(
             id: 1,
-            title: "Always available",
-            body: "Prayer times work completely offline. No internet connection needed.",
-            artwork: .offline
+            title: "Works offline",
+            body: "Airplane mode, no signal, no problem. Times stay on your phone.",
+            mediaName: "onboarding_offline"
         ),
         OnboardingPage(
             id: 2,
-            title: "On your Home Screen",
-            body: "Add the widget to see today’s prayer times without opening the app.",
-            artwork: .widget
+            title: "Home Screen widget",
+            body: "Glance Maghrib without opening anything. Add the widget after setup.",
+            mediaName: "onboarding_widget"
         ),
         OnboardingPage(
             id: 3,
-            title: "Made for Bahrain",
-            body: "Accurate daily timings calculated specifically for Bahrain.",
-            artwork: .bahrain
+            title: "Built for Bahrain",
+            body: "Accurate Bahrain timings — made for here, not a generic world app.",
+            mediaName: "onboarding_bahrain"
         ),
     ]
+}
+
+private enum OnboardingCanvas {
+    /// Matches generated line-drawing video backgrounds.
+    static let color = Color(red: 244 / 255, green: 239 / 255, blue: 233 / 255) // #F4EFE9
+    static let title = Color(red: 0.10, green: 0.12, blue: 0.11)
+    static let body = Color(red: 0.35, green: 0.37, blue: 0.35)
+    static let muted = Color(red: 0.55, green: 0.56, blue: 0.54)
 }
 
 struct FirstLaunchOnboardingView: View {
@@ -52,58 +54,82 @@ struct FirstLaunchOnboardingView: View {
     private var isLastPage: Bool { selection >= pages.count - 1 }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                if !isLastPage {
-                    Button("Skip") {
-                        complete()
-                    }
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(Color(.secondaryLabel))
-                    .accessibilityHint("Skip onboarding and view prayer times")
-                }
-            }
-            .frame(height: 44)
-            .padding(.horizontal, 24)
+        ZStack {
+            OnboardingCanvas.color
+                .ignoresSafeArea()
 
-            TabView(selection: $selection) {
-                ForEach(pages) { page in
-                    OnboardingPageView(page: page)
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    if !isLastPage {
+                        Button("Skip") {
+                            complete()
+                        }
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(OnboardingCanvas.muted)
+                        .accessibilityHint("Skip onboarding and view prayer times")
+                    }
+                }
+                .frame(height: 44)
+                .padding(.horizontal, 24)
+
+                TabView(selection: $selection) {
+                    ForEach(pages) { page in
+                        OnboardingPageView(
+                            page: page,
+                            isActive: selection == page.id,
+                            reduceMotion: reduceMotion
+                        )
                         .tag(page.id)
                         .accessibilityElement(children: .combine)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: selection)
-
-            PageIndicator(count: pages.count, selection: selection)
-                .padding(.bottom, 28)
-                .accessibilityHidden(true)
-
-            Button {
-                if isLastPage {
-                    complete()
-                } else if reduceMotion {
-                    selection += 1
-                } else {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        selection += 1
                     }
                 }
-            } label: {
-                Text(isLastPage ? "View prayer times" : "Continue")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: selection)
+
+                PageIndicator(count: pages.count, selection: selection)
+                    .padding(.bottom, 20)
+                    .accessibilityHidden(true)
+
+                VStack(spacing: 12) {
+                    Button {
+                        if isLastPage {
+                            complete()
+                        } else if reduceMotion {
+                            selection += 1
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                selection += 1
+                            }
+                        }
+                    } label: {
+                        Text(isLastPage ? "View prayer times" : "Continue")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Brand.accent)
+                    .accessibilityHint(isLastPage ? "Finish onboarding" : "Go to the next page")
+
+                    if isLastPage {
+                        Button {
+                            WhatsAppShare.shareApp()
+                        } label: {
+                            Label("Share app on WhatsApp", systemImage: "square.and.arrow.up")
+                                .font(.body.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 48)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Brand.accent)
+                        .accessibilityHint("Share App Store and Play Store links on WhatsApp")
+                    }
+                }
+                .padding(.horizontal, 28)
+                .padding(.bottom, 28)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(Brand.accent)
-            .padding(.horizontal, 28)
-            .padding(.bottom, 32)
-            .accessibilityHint(isLastPage ? "Finish onboarding" : "Go to the next page")
         }
-        .background(Color(.systemBackground))
     }
 
     private func complete() {
@@ -113,24 +139,30 @@ struct FirstLaunchOnboardingView: View {
 
 private struct OnboardingPageView: View {
     let page: OnboardingPage
+    let isActive: Bool
+    let reduceMotion: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer(minLength: 12)
 
-            OnboardingArtworkView(artwork: page.artwork)
-                .frame(width: 220, height: 180)
-                .padding(.bottom, 36)
-                .accessibilityHidden(true)
+            OnboardingHeroMedia(
+                mediaName: page.mediaName,
+                isActive: isActive,
+                reduceMotion: reduceMotion
+            )
+            .frame(width: 280, height: 280)
+            .padding(.bottom, 28)
+            .accessibilityHidden(true)
 
             Text(page.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color(.label))
+                .foregroundStyle(OnboardingCanvas.title)
 
             Text(page.body)
                 .font(.body)
-                .foregroundStyle(Color(.secondaryLabel))
+                .foregroundStyle(OnboardingCanvas.body)
                 .multilineTextAlignment(.center)
                 .padding(.top, 12)
                 .padding(.horizontal, 8)
@@ -139,6 +171,83 @@ private struct OnboardingPageView: View {
             Spacer(minLength: 24)
         }
         .padding(.horizontal, 28)
+        .background(OnboardingCanvas.color)
+    }
+}
+
+private struct OnboardingHeroMedia: View {
+    let mediaName: String
+    let isActive: Bool
+    let reduceMotion: Bool
+
+    var body: some View {
+        Group {
+            if reduceMotion || !isActive {
+                Image(mediaName)
+                    .resizable()
+                    .scaledToFit()
+            } else if let url = Bundle.main.url(forResource: mediaName, withExtension: "mp4") {
+                LoopingVideoPlayer(url: url)
+            } else {
+                Image(mediaName)
+                    .resizable()
+                    .scaledToFit()
+            }
+        }
+        .background(OnboardingCanvas.color)
+    }
+}
+
+private struct LoopingVideoPlayer: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> PlayerContainerView {
+        let view = PlayerContainerView()
+        view.configure(url: url)
+        return view
+    }
+
+    func updateUIView(_ uiView: PlayerContainerView, context: Context) {
+        uiView.configure(url: url)
+    }
+
+    final class PlayerContainerView: UIView {
+        private var playerLayer = AVPlayerLayer()
+        private var player: AVQueuePlayer?
+        private var looper: AVPlayerLooper?
+        private var currentURL: URL?
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            backgroundColor = UIColor(red: 244 / 255, green: 239 / 255, blue: 233 / 255, alpha: 1)
+            playerLayer.videoGravity = .resizeAspect
+            playerLayer.backgroundColor = UIColor(red: 244 / 255, green: 239 / 255, blue: 233 / 255, alpha: 1).cgColor
+            layer.addSublayer(playerLayer)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            playerLayer.frame = bounds
+        }
+
+        func configure(url: URL) {
+            guard currentURL != url else {
+                player?.play()
+                return
+            }
+            currentURL = url
+            let item = AVPlayerItem(url: url)
+            let queue = AVQueuePlayer(playerItem: item)
+            queue.isMuted = true
+            looper = AVPlayerLooper(player: queue, templateItem: item)
+            player = queue
+            playerLayer.player = queue
+            queue.play()
+        }
     }
 }
 
@@ -150,137 +259,9 @@ private struct PageIndicator: View {
         HStack(spacing: 8) {
             ForEach(0..<count, id: \.self) { index in
                 Capsule()
-                    .fill(index == selection ? Brand.accent : Color(.tertiaryLabel).opacity(0.45))
+                    .fill(index == selection ? Brand.accent : OnboardingCanvas.muted.opacity(0.55))
                     .frame(width: index == selection ? 18 : 7, height: 7)
             }
-        }
-    }
-}
-
-private struct OnboardingArtworkView: View {
-    let artwork: OnboardingArtwork
-
-    var body: some View {
-        switch artwork {
-        case .privacy:
-            PrivacyArtwork()
-        case .offline:
-            OfflineArtwork()
-        case .widget:
-            WidgetArtwork()
-        case .bahrain:
-            BahrainArtwork()
-        }
-    }
-}
-
-private struct PrivacyArtwork: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Brand.accent.opacity(0.22), lineWidth: 2)
-                .frame(width: 132, height: 148)
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Brand.accent.opacity(0.10))
-                .frame(width: 108, height: 124)
-            Circle()
-                .stroke(Brand.accent, lineWidth: 3)
-                .frame(width: 44, height: 44)
-                .offset(y: -10)
-            Capsule()
-                .fill(Brand.accent)
-                .frame(width: 18, height: 28)
-                .offset(y: 28)
-        }
-    }
-}
-
-private struct OfflineArtwork: View {
-    var body: some View {
-        ZStack {
-            ForEach(0..<3, id: \.self) { ring in
-                Circle()
-                    .stroke(Brand.accent.opacity(0.18 + Double(ring) * 0.08), lineWidth: 2)
-                    .frame(width: CGFloat(70 + ring * 36), height: CGFloat(70 + ring * 36))
-            }
-            Circle()
-                .fill(Brand.accent)
-                .frame(width: 22, height: 22)
-            Capsule()
-                .fill(Color(.systemBackground))
-                .frame(width: 8, height: 90)
-                .rotationEffect(.degrees(36))
-            Capsule()
-                .fill(Brand.accent.opacity(0.85))
-                .frame(width: 4, height: 90)
-                .rotationEffect(.degrees(36))
-        }
-    }
-}
-
-private struct WidgetArtwork: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Brand.accent.opacity(0.08))
-                .frame(width: 168, height: 132)
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Brand.accent.opacity(0.35), lineWidth: 2)
-                .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .frame(width: 148, height: 108)
-
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Capsule()
-                        .fill(Brand.accent)
-                        .frame(width: 42, height: 8)
-                    Spacer()
-                    Circle()
-                        .fill(Brand.accent.opacity(0.35))
-                        .frame(width: 10, height: 10)
-                }
-                HStack(spacing: 8) {
-                    ForEach(0..<4, id: \.self) { index in
-                        VStack(spacing: 6) {
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .fill(Brand.accent.opacity(index == 1 ? 0.9 : 0.25))
-                                .frame(width: 22, height: 6)
-                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                .fill(Color(.tertiaryLabel).opacity(0.45))
-                                .frame(width: 18, height: 6)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
-            }
-            .padding(.horizontal, 18)
-            .frame(width: 148, height: 108)
-        }
-    }
-}
-
-private struct BahrainArtwork: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 36, style: .continuous)
-                .fill(Brand.accent.opacity(0.10))
-                .frame(width: 150, height: 150)
-            ForEach(0..<8, id: \.self) { index in
-                Capsule()
-                    .fill(Brand.accent.opacity(index.isMultiple(of: 2) ? 0.85 : 0.35))
-                    .frame(width: 10, height: 54)
-                    .offset(y: -34)
-                    .rotationEffect(.degrees(Double(index) * 45))
-            }
-            Circle()
-                .stroke(Brand.accent, lineWidth: 3)
-                .frame(width: 46, height: 46)
-            Circle()
-                .fill(Brand.accent)
-                .frame(width: 14, height: 14)
         }
     }
 }

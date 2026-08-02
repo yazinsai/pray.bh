@@ -4,7 +4,7 @@ import Foundation
 /// Versioned first-launch onboarding completion. Separate from presentation so it can be unit-tested.
 @MainActor
 final class OnboardingCompletionStore: ObservableObject {
-    static let key = "onboarding.v1.complete"
+    static let key = "onboarding.v2.complete"
 
     private let defaults: UserDefaults
     @Published private(set) var isComplete: Bool

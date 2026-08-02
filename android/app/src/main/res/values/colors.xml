@@ -2,6 +2,10 @@
     <color name="ic_launcher_background">#061E2C</color>
     <color name="brand_accent">#2E7561</color>
     <color name="app_background">#FFFFFF</color>
+    <color name="onboarding_background">#F4EFE9</color>
+    <color name="onboarding_text_primary">#1A1F1C</color>
+    <color name="onboarding_text_secondary">#595E59</color>
+    <color name="onboarding_text_muted">#8C8F8A</color>
     <color name="text_primary">#000000</color>
     <color name="text_secondary">#6C6C70</color>
     <color name="text_tertiary">#8E8E93</color>

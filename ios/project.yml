@@ -5,8 +5,8 @@ options:
     iOS: "17.0"
 settings:
   base:
-    MARKETING_VERSION: "0.1.6"
-    CURRENT_PROJECT_VERSION: "12"
+    MARKETING_VERSION: "0.1.8"
+    CURRENT_PROJECT_VERSION: "15"
     SWIFT_VERSION: "5.0"
     DEVELOPMENT_TEAM: 88M2R3XJZH
     CODE_SIGN_STYLE: Automatic
@@ -17,6 +17,10 @@ targets:
     platform: iOS
     sources:
       - path: PrayBHApp
+        excludes:
+          - OnboardingMedia/**
+      - path: PrayBHApp/OnboardingMedia
+        buildPhase: resources
       - path: Shared
     settings:
       base:
@@ -26,6 +30,8 @@ targets:
     infoPlist:
       properties:
         ITSAppUsesNonExemptEncryption: false
+        LSApplicationQueriesSchemes:
+          - whatsapp
     dependencies:
       - target: PrayBHWidgetExtension
   PrayBHWidgetExtension:

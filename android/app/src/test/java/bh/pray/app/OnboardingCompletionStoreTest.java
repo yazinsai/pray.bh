@@ -43,7 +43,14 @@ public class OnboardingCompletionStoreTest {
 
     @Test
     public void keyIsVersioned() {
-        assertEquals("onboarding.v1.complete", OnboardingCompletionStore.KEY);
+        assertEquals("onboarding.v2.complete", OnboardingCompletionStore.KEY);
+    }
+
+    @Test
+    public void shareCopyIncludesBothStoreLinks() {
+        assertTrue(AppShareCopy.MESSAGE.contains(AppShareCopy.APP_STORE_URL));
+        assertTrue(AppShareCopy.MESSAGE.contains(AppShareCopy.PLAY_STORE_URL));
+        assertTrue(AppShareCopy.APP_STORE_URL.contains("id6795117101"));
     }
 
     private static final class InMemorySharedPreferences implements SharedPreferences {
