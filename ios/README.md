@@ -6,8 +6,9 @@ This folder contains a SwiftUI iOS app plus WidgetKit extension for Bahrain pray
 
 - `PrayBH`: SwiftUI app that computes Bahrain prayer times **offline / on-device** (no network for times).
 - `PrayBHWidgetExtension`: WidgetKit extension that uses the same shared local calculator.
+- `PrayBHMac`: macOS menu bar app (`MenuBarExtra`) with live countdown + frosted prayer panel. Bundle ID `bh.pray.app.mac`, agent app (`LSUIElement`).
 
-Both targets include `Shared/` (`PrayerTimesCalculator.swift`, `PrayerTimesLocal.swift`) — a port of the website’s TypeScript AWQAF algorithm. Optional website Links open Safari only when the user taps them; they are not required for core times.
+All of these include `Shared/` (`PrayerTimesCalculator.swift`, `PrayerTimesLocal.swift`) — a port of the website’s TypeScript AWQAF algorithm. Optional website Links open Safari only when the user taps them; they are not required for core times.
 
 ## Current signing setup
 
@@ -22,6 +23,18 @@ Both targets include `Shared/` (`PrayerTimesCalculator.swift`, `PrayerTimesLocal
 cd ios
 xcodegen generate
 ```
+
+## macOS menu bar
+
+```bash
+cd ios
+xcodegen generate
+xcodebuild -project PrayBH.xcodeproj -scheme PrayBHMac \
+  -configuration Debug -destination 'platform=macOS' build
+open ~/Library/Developer/Xcode/DerivedData/PrayBH-*/Build/Products/Debug/pray.bh.app
+```
+
+Or run the `PrayBHMac` scheme from Xcode. The app is menu-bar only (no Dock icon).
 
 ## Local validation
 
